@@ -150,6 +150,52 @@ export const useBookingStore = defineStore('booking', () => {
     }
   }
 
+  async function ensureActiveBookingForDemo(customerProfile) {
+    if (activeBooking.value?.booking?.id && currentStep.value === 3) {
+      return activeBooking.value.booking
+    }
+
+    // Auto-select an available slot
+    await fetchAvailability()
+    let targetCourt = courts.value[0]
+    let targetSlot = targetCourt?.slots?.find(s => s.status === 'AVAILABLE')
+    if (!targetSlot) {
+      // Find across all courts
+      for (const c of courts.value) {
+        const s = c.slots.find(sl => sl.status === 'AVAILABLE')
+        if (s) {
+          targetCourt = c
+          targetSlot = s
+          break
+        }
+      }
+    }
+
+    if (targetCourt && targetSlot) {
+      selectedSlots.value = [{
+        courtId: targetCourt.court_id,
+        courtNumber: targetCourt.court_number,
+        courtName: targetCourt.court_name,
+        courtType: targetCourt.court_type,
+        startHour: targetSlot.start_hour,
+        endHour: targetSlot.end_hour,
+        hourlyRate: targetSlot.hourly_rate
+      }]
+    }
+
+    // Auto add 1 Pocari if available
+    await fetchProducts()
+    if (products.value.length > 0) {
+      const pocari = products.value.find(p => p.sku === 'DRINK-POCARI-SWEAT') || products.value[0]
+      cartItems.value = {
+        [pocari.id]: { product: pocari, qty: 1 }
+      }
+    }
+
+    await submitBooking(customerProfile)
+    return activeBooking.value?.booking
+  }
+
   async function verifySlip(mockScenario = 'MOCK_VALID', customFile = null) {
     if (!activeBooking.value?.booking?.id) return false
     isSubmitting.value = true
@@ -210,6 +256,7 @@ export const useBookingStore = defineStore('booking', () => {
     removeFromCart,
     resetSelection,
     submitBooking,
+    ensureActiveBookingForDemo,
     verifySlip
   }
 })
