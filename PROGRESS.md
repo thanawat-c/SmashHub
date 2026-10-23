@@ -71,3 +71,19 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - `/demo` view rendering LINE LIFF mobile frame on the left and Admin Dashboard on the right.
   - Real-time synchronization via SSE: bookings created or verified on mobile update instantly on the Admin screen without page refresh.
   - Verified live in browser with `browser_subagent`.
+- [x] **Phase 8: Comprehensive UX/UI Overhaul & Elimination of AI Design Tropes** (Completed)
+  - **Eliminated AI Hallmark Tropes**:
+    - Removed cluttered candy-colored button rows and emoji spam from the top sandbox bar.
+    - Eliminated unreadable 6-column spreadsheet squished into mobile viewport.
+    - Polished typography using Google Fonts: `Plus Jakarta Sans`, `Outfit`, and `JetBrains Mono`.
+  - **Benchmarked from World-Class Products**:
+    - **Playtomic / MATCHi (#1 Sports Booking Apps)**:
+      - Implemented Dual View Court Booking on mobile:
+        1. **View A: Time-First Slots View (Recommended)**: Grouped by hourly blocks (`10:00 - 11:00`) with touch-friendly court chips showing court type (`PVC` vs `VIP Acrylic`), pricing, and real-time status.
+        2. **View B: Wide Court Grid**: Spacious horizontal scrolling board with realistic badminton floor graphics.
+      - Court type filters (`ทั้งหมด`, `PVC (1-4)`, `VIP (5-6)`) and time period indicators (`Peak Hour หลัง 17:00 น.`).
+    - **Linear / Stripe Sandbox (DevTools & Backoffice)**:
+      - Dark graphite Developer Sandbox bar with refined scenario selectors, status LED indicators, and collapsible architecture inspection banner.
+      - 1-Click Guided Auto-Tour (`⚡ 1-Click Guided Tour`) automatically showcasing full booking and slip verification flow in 3 seconds.
+      - Clean KPI metric cards with micro-caps labels and monospace numbers.
+  - Pushed to GitHub repository `https://github.com/thanawat-c/SmashHub.git`.
