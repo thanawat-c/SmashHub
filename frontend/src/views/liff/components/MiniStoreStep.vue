@@ -1,94 +1,130 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookingStore } from '@/stores/bookingStore'
 import { useLineProfileStore } from '@/stores/lineProfile'
-import { ShoppingBag, ChevronLeft, ChevronRight, Plus, Minus, AlertCircle } from 'lucide-vue-next'
+import { ShoppingBag, ChevronLeft, ChevronRight, Plus, Minus, AlertCircle, Sparkles } from 'lucide-vue-next'
 
 const bookingStore = useBookingStore()
 const profileStore = useLineProfileStore()
+
+const activeCategory = ref('ALL') // ALL, SHUTTLECOCK, DRINK, RENTAL
 
 onMounted(() => {
   bookingStore.fetchProducts()
 })
 
+const filteredProducts = computed(() => {
+  if (activeCategory.value === 'ALL') return bookingStore.products
+  return bookingStore.products.filter(p => p.category === activeCategory.value)
+})
+
+const categories = [
+  { id: 'ALL', label: 'ทั้งหมด' },
+  { id: 'SHUTTLECOCK', label: '🏸 ลูกแบด' },
+  { id: 'DRINK', label: '🥤 เครื่องดื่ม' },
+  { id: 'RENTAL', label: '🎾 ไม้เช่า & กริป' }
+]
+
 async function onProceedToPayment() {
-  const success = await bookingStore.submitBooking(profileStore.currentProfile)
-  if (success) {
-    // Moved to step 3 inside store
-  }
+  await bookingStore.submitBooking(profileStore.currentProfile)
 }
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-slate-50">
+  <div class="flex flex-col h-full bg-slate-100/70 relative">
     <!-- Header banner -->
-    <div class="bg-white px-4 py-3 border-b border-slate-200 shadow-2xs">
-      <div class="flex items-center justify-between">
+    <div class="bg-white px-3.5 py-2.5 border-b border-slate-200 shadow-2xs">
+      <div class="flex items-center justify-between mb-2">
         <div>
-          <h2 class="text-sm font-bold text-slate-800 flex items-center space-x-1.5">
-            <ShoppingBag class="w-4 h-4 text-emerald-600" />
-            <span>มินิสโตร์ & บริการเช่าอุปกรณ์</span>
+          <h2 class="text-xs font-extrabold text-slate-900 flex items-center space-x-1.5">
+            <ShoppingBag class="w-3.5 h-3.5 text-emerald-600" />
+            <span>มินิสโตร์ & อุปกรณ์</span>
           </h2>
-          <p class="text-[11px] text-slate-500">สั่งล่วงหน้า รับของพร้อมลงคอร์ทได้ทันที</p>
+          <p class="text-[10px] text-slate-400">สั่งพร้อมคอร์ท รับสินค้าทันทีที่หน้าเคาน์เตอร์</p>
         </div>
-        <div v-if="bookingStore.totalCartCount > 0" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
-          ตะกร้า: {{ bookingStore.totalCartCount }} ชิ้น
+        <div v-if="bookingStore.totalCartCount > 0" class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded-full font-mono">
+          {{ bookingStore.totalCartCount }} ชิ้น
         </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex space-x-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+        <button
+          v-for="cat in categories"
+          :key="cat.id"
+          @click="activeCategory = cat.id"
+          :class="[
+            'px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition flex-shrink-0 border',
+            activeCategory === cat.id
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+              : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+          ]"
+        >
+          {{ cat.label }}
+        </button>
       </div>
     </div>
 
-    <!-- Error Banner -->
-    <div v-if="bookingStore.errorMessage" class="m-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center space-x-2">
+    <!-- Error Alert -->
+    <div v-if="bookingStore.errorMessage" class="m-3 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center space-x-2">
       <AlertCircle class="w-4 h-4 flex-shrink-0" />
       <span>{{ bookingStore.errorMessage }}</span>
     </div>
 
-    <!-- Products List -->
-    <div class="flex-1 overflow-y-auto p-3 space-y-2.5">
+    <!-- Products Grid -->
+    <div class="flex-1 overflow-y-auto p-3 pb-28 space-y-2">
       <div
-        v-for="product in bookingStore.products"
+        v-for="product in filteredProducts"
         :key="product.id"
-        class="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs flex space-x-3 items-center hover:border-emerald-300 transition"
+        class="bg-white border border-slate-200/90 rounded-2xl p-2.5 shadow-2xs flex space-x-3 items-center hover:border-emerald-300 transition"
       >
-        <!-- Product Thumbnail -->
-        <img
-          :src="product.image_url || 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=200'"
-          :alt="product.name"
-          class="w-16 h-16 rounded-lg object-cover bg-slate-100 flex-shrink-0 border border-slate-100"
-        />
+        <!-- Product Thumbnail with subtle rounded badge -->
+        <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+          <img
+            :src="product.image_url || 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=200'"
+            :alt="product.name"
+            class="w-full h-full object-cover"
+          />
+          <div
+            v-if="product.stock_qty <= 5 && product.stock_qty > 0"
+            class="absolute bottom-0 inset-x-0 bg-rose-600 text-white text-[8px] font-bold text-center py-0.2"
+          >
+            เหลือ {{ product.stock_qty }}
+          </div>
+        </div>
 
         <!-- Product Details -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center space-x-1.5 mb-0.5">
             <span
               :class="[
-                'text-[9px] font-semibold px-1.5 py-0.5 rounded',
-                product.category === 'SHUTTLECOCK' ? 'bg-amber-100 text-amber-800' :
-                product.category === 'DRINK' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                'text-[8px] font-bold px-1.5 py-0.2 rounded font-mono',
+                product.category === 'SHUTTLECOCK' ? 'bg-amber-100 text-amber-900' :
+                product.category === 'DRINK' ? 'bg-blue-100 text-blue-900' : 'bg-purple-100 text-purple-900'
               ]"
             >
-              {{ product.category === 'SHUTTLECOCK' ? 'ลูกแบด' : product.category === 'DRINK' ? 'เครื่องดื่ม' : 'อุปกรณ์เช่า' }}
+              {{ product.category === 'SHUTTLECOCK' ? 'ลูกแบด' : product.category === 'DRINK' ? 'เครื่องดื่ม' : 'อุปกรณ์' }}
             </span>
-            <span class="text-[10px] text-slate-400">คงเหลือ {{ product.stock_qty }} ชิ้น</span>
+            <span class="text-[9px] text-slate-400 font-mono">คงเหลือ {{ product.stock_qty }} ชิ้น</span>
           </div>
 
-          <h3 class="text-xs font-semibold text-slate-800 truncate leading-snug">{{ product.name }}</h3>
-          <div class="text-xs font-bold text-emerald-700 mt-1">฿{{ product.price.toLocaleString() }}</div>
+          <h3 class="text-xs font-bold text-slate-900 truncate leading-snug">{{ product.name }}</h3>
+          <div class="text-xs font-black text-emerald-700 font-mono mt-0.5">฿{{ product.price.toLocaleString() }}</div>
         </div>
 
-        <!-- Add/Remove Counter Stepper -->
-        <div class="flex items-center space-x-1.5 flex-shrink-0">
+        <!-- Stepper Counter Pill -->
+        <div class="flex items-center space-x-1 flex-shrink-0 bg-slate-100 p-0.5 rounded-full border border-slate-200">
           <button
             v-if="bookingStore.cartItems[product.id]"
             @click="bookingStore.removeFromCart(product.id)"
-            class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition active:scale-95"
+            class="w-6 h-6 rounded-full bg-white text-slate-700 hover:bg-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
           >
-            <Minus class="w-3.5 h-3.5" />
+            <Minus class="w-3 h-3" />
           </button>
 
           <span
             v-if="bookingStore.cartItems[product.id]"
-            class="text-xs font-bold text-slate-800 w-5 text-center"
+            class="text-xs font-bold font-mono text-slate-800 px-1 text-center"
           >
             {{ bookingStore.cartItems[product.id].qty }}
           </span>
@@ -97,55 +133,52 @@ async function onProceedToPayment() {
             @click="bookingStore.addToCart(product)"
             :disabled="product.stock_qty <= 0 || (bookingStore.cartItems[product.id]?.qty || 0) >= product.stock_qty"
             :class="[
-              'w-7 h-7 rounded-full flex items-center justify-center transition active:scale-95 shadow-xs',
+              'w-6 h-6 rounded-full flex items-center justify-center transition active:scale-95 shadow-2xs',
               product.stock_qty > 0
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             ]"
           >
-            <Plus class="w-3.5 h-3.5" />
+            <Plus class="w-3 h-3" />
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Bill Summary Bar -->
-    <div class="bg-white border-t border-slate-200 p-3 shadow-lg sticky bottom-0 z-20">
-      <!-- Breakdown Summary -->
-      <div class="space-y-1 mb-2.5 text-xs text-slate-600 border-b border-slate-100 pb-2">
-        <div class="flex justify-between">
-          <span>ค่าคอร์ท ({{ bookingStore.selectedSlots.length }} ชม.)</span>
-          <span class="font-mono">฿{{ bookingStore.courtTotal.toLocaleString() }}</span>
+    <!-- Floating Thumb Summary Bar (Glassmorphism) -->
+    <div class="absolute bottom-2 left-2 right-2 z-20">
+      <div class="bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-slate-700/80">
+        <div class="flex items-center justify-between text-xs mb-2 pb-2 border-b border-slate-800">
+          <div class="space-x-2 text-[10px] text-slate-400">
+            <span>คอร์ท: <strong class="text-slate-200 font-mono">฿{{ bookingStore.courtTotal.toLocaleString() }}</strong></span>
+            <span>•</span>
+            <span>สินค้า: <strong class="text-slate-200 font-mono">฿{{ bookingStore.itemTotal.toLocaleString() }}</strong></span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 mr-1">ยอดสุทธิ:</span>
+            <span class="text-sm font-extrabold text-emerald-400 font-mono">฿{{ bookingStore.netTotal.toLocaleString() }}</span>
+          </div>
         </div>
-        <div class="flex justify-between">
-          <span>สินค้ามินิสโตร์ ({{ bookingStore.totalCartCount }} ชิ้น)</span>
-          <span class="font-mono">฿{{ bookingStore.itemTotal.toLocaleString() }}</span>
-        </div>
-        <div class="flex justify-between font-bold text-slate-900 text-sm pt-1">
-          <span>ยอดชำระสุทธิ</span>
-          <span class="text-emerald-700 font-mono">฿{{ bookingStore.netTotal.toLocaleString() }}</span>
-        </div>
-      </div>
 
-      <!-- Action Buttons -->
-      <div class="flex space-x-2">
-        <button
-          @click="bookingStore.currentStep = 1"
-          class="px-3 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-xs transition flex items-center space-x-1"
-        >
-          <ChevronLeft class="w-4 h-4" />
-          <span>แก้ไขคอร์ท</span>
-        </button>
+        <div class="flex space-x-2">
+          <button
+            @click="bookingStore.currentStep = 1"
+            class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center space-x-1"
+          >
+            <ChevronLeft class="w-3.5 h-3.5" />
+            <span>คอร์ท</span>
+          </button>
 
-        <button
-          @click="onProceedToPayment"
-          :disabled="bookingStore.isSubmitting"
-          class="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-500/20 transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50"
-        >
-          <span v-if="bookingStore.isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          <span v-else>ยืนยันและไปชำระเงิน</span>
-          <ChevronRight v-if="!bookingStore.isSubmitting" class="w-4 h-4" />
-        </button>
+          <button
+            @click="onProceedToPayment"
+            :disabled="bookingStore.isSubmitting"
+            class="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold text-xs shadow-glow-emerald transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50"
+          >
+            <span v-if="bookingStore.isSubmitting" class="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
+            <span v-else>ยืนยันและไปชำระเงิน (฿{{ bookingStore.netTotal.toLocaleString() }})</span>
+            <ChevronRight v-if="!bookingStore.isSubmitting" class="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   </div>

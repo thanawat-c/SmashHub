@@ -1,11 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useBookingStore } from '@/stores/bookingStore'
-import { QrCode, Timer, Upload, CheckCircle2, XCircle, AlertTriangle, HelpCircle, ShieldCheck } from 'lucide-vue-next'
+import {
+  QrCode, Timer, Upload, CheckCircle2, XCircle, AlertTriangle,
+  Copy, Check, ShieldCheck, Download, Sparkles, Image as ImageIcon
+} from 'lucide-vue-next'
 
 const bookingStore = useBookingStore()
 
-// Countdown timer (10 mins from expires_at)
+// Countdown timer
 const remainingSeconds = ref(600)
 let timerInterval = null
 
@@ -37,6 +40,16 @@ const formattedTimer = computed(() => {
 
 const isNearExpiry = computed(() => remainingSeconds.value < 120)
 
+// 1-Click Copy Feedback
+const isCopied = ref(false)
+function copyAccount() {
+  navigator.clipboard.writeText('0987654321')
+  isCopied.value = true
+  setTimeout(() => {
+    isCopied.value = false
+  }, 2000)
+}
+
 // File upload handling
 const selectedFile = ref(null)
 const previewImage = ref(null)
@@ -55,92 +68,117 @@ async function triggerVerification(mockScenario = 'MOCK_VALID') {
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-slate-50 overflow-y-auto p-4 space-y-4">
-    <!-- Booking Ref & Countdown Timer Banner -->
+  <div class="flex flex-col h-full bg-slate-100/70 overflow-y-auto p-3 space-y-3 pb-8">
+    <!-- Booking Reference & Timer Header -->
     <div
       :class="[
-        'rounded-2xl p-3.5 border shadow-sm transition flex items-center justify-between',
+        'rounded-2xl p-3 border shadow-xs transition flex items-center justify-between',
         isNearExpiry
           ? 'bg-rose-50 border-rose-300 text-rose-900 animate-pulse'
           : 'bg-white border-slate-200 text-slate-800'
       ]"
     >
       <div>
-        <div class="text-[11px] text-slate-400 font-mono">รหัสการจองชั่วคราว</div>
-        <div class="text-sm font-bold font-mono text-emerald-800">
+        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold">Booking ID</div>
+        <div class="text-xs font-black font-mono text-emerald-800">
           {{ bookingStore.activeBooking?.booking?.booking_no || 'BK-XXXXX' }}
         </div>
       </div>
 
-      <div class="text-right">
-        <div class="text-[10px] text-slate-400 flex items-center justify-end space-x-1">
-          <Timer class="w-3.5 h-3.5 text-amber-500" />
-          <span>เวลาล็อคสล็อต</span>
+      <div class="text-right flex items-center space-x-2">
+        <div class="p-1.5 rounded-lg bg-amber-500/10 text-amber-600">
+          <Timer class="w-4 h-4" />
         </div>
-        <div
-          :class="[
-            'text-lg font-mono font-extrabold tracking-wider',
-            isNearExpiry ? 'text-rose-600' : 'text-amber-600'
-          ]"
-        >
-          {{ formattedTimer }}
-        </div>
-      </div>
-    </div>
-
-    <!-- PromptPay QR Code Box -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm text-center">
-      <div class="flex items-center justify-center space-x-1.5 text-xs font-semibold text-slate-700 mb-1">
-        <QrCode class="w-4 h-4 text-emerald-600" />
-        <span>สแกนจ่ายผ่านพร้อมเพย์ (PromptPay)</span>
-      </div>
-      <p class="text-[11px] text-slate-400 mb-3">บันทึกรูปหรือสแกนด้วย Mobile Banking ทุกธนาคาร</p>
-
-      <!-- QR Code Image -->
-      <div class="inline-block bg-white p-3 rounded-2xl border-2 border-slate-100 shadow-inner my-1">
-        <!-- SVG / Image QR Code -->
-        <img
-          :src="`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(bookingStore.activeBooking?.promptpay_qr || 'smashhub')}`"
-          alt="PromptPay QR Code"
-          class="w-44 h-44 object-contain mx-auto"
-        />
-        <div class="mt-2 text-xs font-semibold text-slate-500 flex items-center justify-center space-x-1">
-          <ShieldCheck class="w-3.5 h-3.5 text-blue-500" />
-          <span>พร้อมเพย์ e-Payment</span>
-        </div>
-      </div>
-
-      <!-- Amount to Pay -->
-      <div class="mt-3 bg-emerald-50 rounded-xl p-2.5 border border-emerald-100">
-        <div class="text-[11px] text-emerald-700">ยอดที่ต้องชำระตรงตามบิล</div>
-        <div class="text-xl font-black text-emerald-800 font-mono">
-          ฿{{ bookingStore.activeBooking?.booking?.net_total?.toLocaleString() || '0' }}
-        </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">
-          {{ bookingStore.activeBooking?.promptpay_name || 'บจก. สแมชฮับ แบดมินตัน' }} ({{ bookingStore.activeBooking?.promptpay_phone || '098-7-65432-1' }})
-        </div>
-      </div>
-    </div>
-
-    <!-- Slip Upload Box -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-      <div class="text-xs font-bold text-slate-800 mb-1 flex items-center space-x-1.5">
-        <Upload class="w-4 h-4 text-emerald-600" />
-        <span>แนบสลิปโอนเงิน</span>
-      </div>
-      <p class="text-[11px] text-slate-400 mb-3">อัปโหลดสลิปธนาคารเพื่อตรวจสอบอัตโนมัติ</p>
-
-      <!-- Custom File Input -->
-      <label class="block cursor-pointer">
-        <div class="border-2 border-dashed border-slate-300 hover:border-emerald-400 rounded-xl p-4 text-center bg-slate-50 transition">
-          <div v-if="previewImage" class="space-y-2">
-            <img :src="previewImage" class="w-24 h-32 object-cover mx-auto rounded-lg shadow-sm border border-slate-200" />
-            <div class="text-xs text-emerald-600 font-medium">เปลี่ยนไฟล์สลิป</div>
+        <div>
+          <div class="text-[9px] text-slate-400">หมดเวลาล็อคสล็อตใน</div>
+          <div
+            :class="[
+              'text-base font-mono font-black tracking-wider leading-none',
+              isNearExpiry ? 'text-rose-600' : 'text-amber-600'
+            ]"
+          >
+            {{ formattedTimer }}
           </div>
-          <div v-else class="space-y-1">
-            <Upload class="w-6 h-6 text-slate-400 mx-auto" />
-            <div class="text-xs text-slate-600 font-medium">กดเพื่อเลือกรูปภาพสลิป</div>
-            <div class="text-[10px] text-slate-400">รองรับไฟล์ JPG, PNG</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Authentic PromptPay e-Payment Card -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden text-center">
+      <!-- PromptPay Official Header Banner -->
+      <div class="bg-[#003d6b] text-white py-2.5 px-4 flex items-center justify-between">
+        <div class="flex items-center space-x-1.5 text-xs font-extrabold tracking-wider">
+          <span class="text-sky-400">Prompt</span><span>Pay</span>
+          <span class="text-[9px] bg-sky-500/30 text-sky-200 px-1.5 py-0.2 rounded font-sans font-normal">e-Payment</span>
+        </div>
+        <span class="text-[10px] text-slate-300 font-mono">SCAN TO PAY</span>
+      </div>
+
+      <div class="p-4">
+        <!-- Amount To Pay Highlight -->
+        <div class="mb-3">
+          <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">ยอดชำระสุทธิ</div>
+          <div class="text-2xl font-black text-slate-900 font-mono tracking-tight mt-0.5">
+            ฿{{ bookingStore.activeBooking?.booking?.net_total?.toLocaleString() || '0' }}
+          </div>
+        </div>
+
+        <!-- QR Box -->
+        <div class="inline-block bg-white p-2.5 rounded-2xl border-2 border-slate-100 shadow-inner">
+          <img
+            :src="`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(bookingStore.activeBooking?.promptpay_qr || 'smashhub')}`"
+            alt="PromptPay QR Code"
+            class="w-36 h-36 object-contain mx-auto"
+          />
+        </div>
+
+        <!-- 1-Click Copy Account & Store Details -->
+        <div class="mt-3 bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 text-left flex items-center justify-between">
+          <div>
+            <div class="text-[10px] text-slate-400">ชื่อบัญชี: บจก. สแมชฮับ แบดมินตัน</div>
+            <div class="text-xs font-bold font-mono text-slate-800">
+              พร้อมเพย์: 098-7-65432-1
+            </div>
+          </div>
+
+          <button
+            @click="copyAccount"
+            :class="[
+              'px-2.5 py-1.5 rounded-xl text-[10px] font-bold transition flex items-center space-x-1 shadow-2xs active:scale-95',
+              isCopied
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'
+            ]"
+          >
+            <Check v-if="isCopied" class="w-3 h-3 text-white" />
+            <Copy v-else class="w-3 h-3 text-slate-500" />
+            <span>{{ isCopied ? 'คัดลอกแล้ว' : 'คัดลอกเบอร์' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slip Upload Zone -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-3.5 shadow-xs">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+          <Upload class="w-3.5 h-3.5 text-emerald-600" />
+          <span>แนบสลิปเพื่อตรวจสอบ</span>
+        </div>
+        <span class="text-[10px] text-emerald-600 font-medium">ตรวจผ่าน AI อัตโนมัติ</span>
+      </div>
+
+      <!-- File Input Drop Area -->
+      <label class="block cursor-pointer">
+        <div class="border-2 border-dashed border-slate-300 hover:border-emerald-400 rounded-2xl p-3 text-center bg-slate-50 transition">
+          <div v-if="previewImage" class="space-y-1.5">
+            <img :src="previewImage" class="w-20 h-28 object-cover mx-auto rounded-lg shadow-xs border border-slate-200" />
+            <div class="text-[11px] text-emerald-600 font-semibold">เปลี่ยนไฟล์รูปภาพสลิป</div>
+          </div>
+          <div v-else class="space-y-1 py-2">
+            <ImageIcon class="w-6 h-6 text-slate-400 mx-auto" />
+            <div class="text-xs text-slate-700 font-semibold">แตะเพื่อเลือกรูปภาพสลิปจากอัลบั้ม</div>
+            <div class="text-[9px] text-slate-400">รองรับสลิปโอนเงินทุกธนาคาร (JPG, PNG)</div>
           </div>
         </div>
         <input type="file" accept="image/*" class="hidden" @change="onFileSelected" />
@@ -151,83 +189,71 @@ async function triggerVerification(mockScenario = 'MOCK_VALID') {
         v-if="selectedFile"
         @click="triggerVerification('MOCK_VALID')"
         :disabled="bookingStore.isSubmitting"
-        class="w-full mt-3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow transition flex items-center justify-center space-x-1.5"
+        class="w-full mt-2.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5"
       >
-        <span v-if="bookingStore.isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        <span>ตรวจสอบสลิปไฟล์ที่เลือก</span>
+        <span v-if="bookingStore.isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>ส่งตรวจสอบสลิปนี้ทันที</span>
       </button>
     </div>
 
-    <!-- Portfolio Mock Testing Tools (Crucial for recruiter test) -->
-    <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md border border-slate-700">
+    <!-- Portfolio Mock Testing Pill Container -->
+    <div class="bg-slate-900 rounded-3xl p-3.5 text-white shadow-xl border border-slate-800">
       <div class="flex items-center space-x-1.5 text-xs font-bold text-emerald-400 mb-1">
-        <HelpCircle class="w-4 h-4" />
-        <span>Portfolio Mock Testing Scenarios</span>
+        <Sparkles class="w-3.5 h-3.5" />
+        <span>Portfolio Mock Scenarios</span>
       </div>
-      <p class="text-[11px] text-slate-300 mb-3 leading-relaxed">
-        ปุ่มทดสอบระบบตรวจสลิป 4 ชั้น (คลิกเพื่อทดสอบ Edge Cases โดยไม่ต้องโอนเงินจริง):
+      <p class="text-[10px] text-slate-400 mb-2.5">
+        คลิกทดสอบ 4 เหตุการณ์ตรวจสลิปได้ทันที (ไม่ต้องโอนเงินจริง):
       </p>
 
-      <div class="grid grid-cols-2 gap-2 text-[11px]">
-        <!-- 1. MOCK_VALID -->
+      <div class="grid grid-cols-2 gap-1.5 text-[10px]">
         <button
           @click="triggerVerification('MOCK_VALID')"
           :disabled="bookingStore.isSubmitting"
-          class="p-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-medium transition text-left flex flex-col justify-between border border-emerald-500/40 active:scale-95"
+          class="p-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-200 rounded-xl font-medium transition text-left flex flex-col justify-between"
         >
-          <div class="font-bold flex items-center space-x-1 text-emerald-200">
-            <span>🟢 MOCK_VALID</span>
-          </div>
-          <div class="text-[10px] text-emerald-100 opacity-90 mt-1">สลิปถูกต้อง ผ่านฉลุย -> CONFIRMED</div>
+          <span class="font-bold">🟢 MOCK_VALID</span>
+          <span class="text-[9px] text-emerald-400/80 mt-0.5">ผ่านฉลุย -> ยืนยันคอร์ท</span>
         </button>
 
-        <!-- 2. MOCK_DUPLICATE -->
         <button
           @click="triggerVerification('MOCK_DUPLICATE')"
           :disabled="bookingStore.isSubmitting"
-          class="p-2.5 bg-rose-900/70 hover:bg-rose-900 text-white rounded-xl font-medium transition text-left flex flex-col justify-between border border-rose-600/40 active:scale-95"
+          class="p-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 rounded-xl font-medium transition text-left flex flex-col justify-between"
         >
-          <div class="font-bold flex items-center space-x-1 text-rose-300">
-            <span>🔴 MOCK_DUPLICATE</span>
-          </div>
-          <div class="text-[10px] text-rose-200 opacity-90 mt-1">สลิปซ้ำ trans_ref เดิมในระบบ</div>
+          <span class="font-bold">🔴 MOCK_DUPLICATE</span>
+          <span class="text-[9px] text-rose-400/80 mt-0.5">ตรวจจับสลิปซ้ำเดิม</span>
         </button>
 
-        <!-- 3. MOCK_UNDERPAID -->
         <button
           @click="triggerVerification('MOCK_UNDERPAID')"
           :disabled="bookingStore.isSubmitting"
-          class="p-2.5 bg-amber-900/70 hover:bg-amber-900 text-white rounded-xl font-medium transition text-left flex flex-col justify-between border border-amber-600/40 active:scale-95"
+          class="p-2 bg-amber-950/80 hover:bg-amber-900 border border-amber-500/40 text-amber-200 rounded-xl font-medium transition text-left flex flex-col justify-between"
         >
-          <div class="font-bold flex items-center space-x-1 text-amber-300">
-            <span>🟡 MOCK_UNDERPAID</span>
-          </div>
-          <div class="text-[10px] text-amber-200 opacity-90 mt-1">ยอดโอนขาด &lt; ยอดในบิล</div>
+          <span class="font-bold">🟡 MOCK_UNDERPAID</span>
+          <span class="text-[9px] text-amber-400/80 mt-0.5">ตรวจจับยอดโอนขาด</span>
         </button>
 
-        <!-- 4. MOCK_API_DOWN -->
         <button
           @click="triggerVerification('MOCK_API_DOWN')"
           :disabled="bookingStore.isSubmitting"
-          class="p-2.5 bg-purple-900/70 hover:bg-purple-900 text-white rounded-xl font-medium transition text-left flex flex-col justify-between border border-purple-600/40 active:scale-95"
+          class="p-2 bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-200 rounded-xl font-medium transition text-left flex flex-col justify-between"
         >
-          <div class="font-bold flex items-center space-x-1 text-purple-300">
-            <span>🟠 MOCK_API_DOWN</span>
-          </div>
-          <div class="text-[10px] text-purple-200 opacity-90 mt-1">Gateway ล่ม -> MANUAL_REVIEW</div>
+          <span class="font-bold">🟣 MOCK_API_DOWN</span>
+          <span class="text-[9px] text-purple-400/80 mt-0.5">ส่งเข้าคิวแอดมินตรวจ</span>
         </button>
       </div>
 
-      <!-- Verification Feedback Banner -->
-      <div v-if="bookingStore.slipResult" class="mt-3 p-3 rounded-xl text-xs bg-slate-950/80 border border-slate-700">
-        <div class="flex items-center space-x-2 font-bold mb-1">
-          <CheckCircle2 v-if="bookingStore.slipResult.success" class="w-4 h-4 text-emerald-400" />
-          <XCircle v-else class="w-4 h-4 text-rose-400" />
+      <!-- Result Banner -->
+      <div v-if="bookingStore.slipResult" class="mt-2.5 p-2.5 rounded-xl text-[11px] bg-slate-950 border border-slate-800">
+        <div class="flex items-center space-x-1.5 font-bold mb-0.5">
+          <CheckCircle2 v-if="bookingStore.slipResult.success" class="w-3.5 h-3.5 text-emerald-400" />
+          <XCircle v-else class="w-3.5 h-3.5 text-rose-400" />
           <span :class="bookingStore.slipResult.success ? 'text-emerald-400' : 'text-rose-400'">
-            สถานะ: {{ bookingStore.slipResult.verification_status }}
+            {{ bookingStore.slipResult.verification_status }}
           </span>
         </div>
-        <p class="text-[11px] text-slate-300">{{ bookingStore.slipResult.message }}</p>
+        <p class="text-[10px] text-slate-300 leading-tight">{{ bookingStore.slipResult.message }}</p>
       </div>
     </div>
   </div>
