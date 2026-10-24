@@ -6,13 +6,13 @@ import DemoView from '../views/demo/DemoView.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/demo'
+    redirect: '/liff'
   },
   {
     path: '/liff',
     name: 'liff',
     component: LiffView,
-    meta: { title: 'SmashHub - จองคอร์ทแบดมินตัน' }
+    meta: { title: 'SmashHub - จองคอร์ทแบดมินตัน (LINE LIFF)' }
   },
   {
     path: '/admin',
@@ -24,7 +24,7 @@ const routes = [
     path: '/demo',
     name: 'demo',
     component: DemoView,
-    meta: { title: 'SmashHub - Interactive Split-screen Demo' }
+    meta: { title: 'SmashHub - Split-screen Test' }
   }
 ]
 

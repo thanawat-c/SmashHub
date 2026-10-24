@@ -101,49 +101,20 @@ function getSlotColorClass(court, slot) {
 
 <template>
   <div class="flex flex-col h-full bg-slate-100 relative">
-    <!-- Date & Filter Bar (Sticky Header) -->
-    <div class="bg-white px-3 py-2.5 border-b border-slate-200 shadow-2xs sticky top-0 z-10 space-y-2">
-      <!-- Date Carousel Header -->
+    <!-- Date & Filter Bar (Clean Compact Sticky Header) -->
+    <div class="bg-white px-3 py-2 border-b border-slate-200 shadow-2xs sticky top-0 z-10 space-y-1.5">
+      <!-- Date Carousel Header with Quick Day Selector -->
       <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-800">
+        <div class="flex items-center space-x-1.5 text-xs font-extrabold text-slate-800">
           <Calendar class="w-3.5 h-3.5 text-emerald-600" />
           <span>เลือกวันที่</span>
         </div>
-        <span class="text-[10px] text-slate-500 font-mono bg-slate-100 px-2 py-0.5 rounded-full">
-          {{ bookingStore.selectedDate }}
-        </span>
-      </div>
-
-      <!-- Sports Date Cards Carousel -->
-      <div class="flex space-x-2 overflow-x-auto pb-0.5 scrollbar-none">
-        <button
-          v-for="chip in dateChips"
-          :key="chip.val"
-          @click="onDateChange(chip.val)"
-          :class="[
-            'px-3 py-1.5 rounded-xl text-center transition flex-shrink-0 border min-w-[62px]',
-            bookingStore.selectedDate === chip.val
-              ? 'bg-slate-900 text-white border-slate-900 shadow-sm ring-1 ring-emerald-500/50'
-              : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-          ]"
-        >
-          <div :class="['text-[10px] font-semibold leading-tight', bookingStore.selectedDate === chip.val ? 'text-emerald-400' : 'text-slate-400']">
-            {{ chip.weekday }}
-          </div>
-          <div class="text-xs font-extrabold font-mono mt-0.5">
-            {{ chip.dayMonth }}
-          </div>
-        </button>
-      </div>
-
-      <!-- Controls Row: View Mode Switcher + Court Type Filter -->
-      <div class="flex items-center justify-between pt-1 border-t border-slate-100">
-        <!-- Court Type Pills -->
+        <!-- Court Filter Tabs (Compact) -->
         <div class="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-lg text-[10px]">
           <button
             @click="courtFilter = 'ALL'"
             :class="[
-              'px-2 py-1 rounded-md transition font-medium',
+              'px-2 py-0.5 rounded-md transition font-medium',
               courtFilter === 'ALL' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500'
             ]"
           >
@@ -152,64 +123,44 @@ function getSlotColorClass(court, slot) {
           <button
             @click="courtFilter = 'PVC'"
             :class="[
-              'px-2 py-1 rounded-md transition font-medium flex items-center space-x-1',
+              'px-2 py-0.5 rounded-md transition font-medium',
               courtFilter === 'PVC' ? 'bg-white text-emerald-700 shadow-xs font-bold' : 'text-slate-500'
             ]"
           >
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>PVC (1-4)</span>
+            PVC (1-4)
           </button>
           <button
             @click="courtFilter = 'ACRYLIC'"
             :class="[
-              'px-2 py-1 rounded-md transition font-medium flex items-center space-x-1',
+              'px-2 py-0.5 rounded-md transition font-medium',
               courtFilter === 'ACRYLIC' ? 'bg-white text-blue-700 shadow-xs font-bold' : 'text-slate-500'
             ]"
           >
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-            <span>VIP (5-6)</span>
-          </button>
-        </div>
-
-        <!-- View Mode Switcher (Playtomic style: Slots vs Grid) -->
-        <div class="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-lg text-[10px]">
-          <button
-            @click="viewMode = 'slots'"
-            :class="[
-              'px-2 py-1 rounded-md transition flex items-center space-x-1 font-medium',
-              viewMode === 'slots' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500'
-            ]"
-            title="ดูตามช่วงเวลา (แนะนำ)"
-          >
-            <Clock class="w-3 h-3" />
-            <span>ช่วงเวลา</span>
-          </button>
-          <button
-            @click="viewMode = 'grid'"
-            :class="[
-              'px-2 py-1 rounded-md transition flex items-center space-x-1 font-medium',
-              viewMode === 'grid' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500'
-            ]"
-            title="ดูผังสนามเต็ม"
-          >
-            <LayoutGrid class="w-3 h-3" />
-            <span>ผังสนาม</span>
+            VIP (5-6)
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Rate Info & Status Legend -->
-    <div class="bg-slate-900 text-white px-3 py-1.5 text-[10px] flex items-center justify-between shadow-xs">
-      <div class="flex items-center space-x-1 text-emerald-400 font-medium">
-        <Zap class="w-3 h-3" />
-        <span>Peak Hour หลัง 17:00 น.</span>
-      </div>
-      <div class="flex items-center space-x-2 text-[10px] font-medium text-slate-300">
-        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-xs bg-white border border-slate-400"></span><span>ว่าง</span></span>
-        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-xs bg-emerald-500"></span><span>เลือก</span></span>
-        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-xs bg-amber-400"></span><span>รอโอน</span></span>
-        <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-xs bg-slate-400"></span><span>เต็ม</span></span>
+      <!-- Sports Date Cards Carousel -->
+      <div class="flex space-x-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+        <button
+          v-for="chip in dateChips"
+          :key="chip.val"
+          @click="onDateChange(chip.val)"
+          :class="[
+            'px-2.5 py-1 rounded-xl text-center transition flex-shrink-0 border min-w-[58px]',
+            bookingStore.selectedDate === chip.val
+              ? 'bg-slate-900 text-white border-slate-900 shadow-sm ring-1 ring-emerald-500/50'
+              : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+          ]"
+        >
+          <div :class="['text-[9px] font-semibold leading-tight', bookingStore.selectedDate === chip.val ? 'text-emerald-400' : 'text-slate-400']">
+            {{ chip.weekday }}
+          </div>
+          <div class="text-[11px] font-extrabold font-mono mt-0.5">
+            {{ chip.dayMonth }}
+          </div>
+        </button>
       </div>
     </div>
 
