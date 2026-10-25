@@ -15,6 +15,11 @@ const steps = [
   { num: 3, label: 'ชำระเงิน' },
   { num: 4, label: 'ตั๋วเข้าเล่น' }
 ]
+function goToStep(stepNum) {
+  if (stepNum < bookingStore.currentStep) {
+    bookingStore.currentStep = stepNum
+  }
+}
 </script>
 
 <template>
@@ -32,7 +37,14 @@ const steps = [
             :key="step.num"
             class="flex items-center flex-1"
           >
-            <div class="flex items-center space-x-1.5">
+            <div
+              @click="goToStep(step.num)"
+              :class="[
+                'flex items-center space-x-1.5 select-none transition',
+                step.num < bookingStore.currentStep ? 'cursor-pointer hover:opacity-80 active:scale-95' : ''
+              ]"
+              :title="step.num < bookingStore.currentStep ? `ย้อนกลับไป: ${step.label}` : ''"
+            >
               <div
                 :class="[
                   'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold font-mono transition-all',

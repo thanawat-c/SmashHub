@@ -1,16 +1,33 @@
 <script setup>
 import { ref } from 'vue'
 import { useLineProfileStore } from '@/stores/lineProfile'
+import { useBookingStore } from '@/stores/bookingStore'
 import {
-  ChevronDown, Check, ShieldCheck, ChevronLeft, Wifi, User
+  ChevronDown, Check, ShieldCheck, ChevronLeft, Wifi, User, RotateCcw
 } from 'lucide-vue-next'
 
 const profileStore = useLineProfileStore()
+const bookingStore = useBookingStore()
 const showDropdown = ref(false)
 
 function switchProfile(profile) {
   profileStore.selectProfile(profile)
   showDropdown.value = false
+}
+
+function handleBack() {
+  if (bookingStore.currentStep > 1) {
+    if (bookingStore.currentStep === 4) {
+      bookingStore.resetSelection()
+      bookingStore.currentStep = 1
+      bookingStore.fetchAvailability()
+    } else {
+      bookingStore.currentStep--
+    }
+  } else {
+    bookingStore.resetSelection()
+    bookingStore.fetchAvailability()
+  }
 }
 </script>
 
@@ -33,8 +50,12 @@ function switchProfile(profile) {
     <!-- LINE Official In-App Browser Header -->
     <div class="px-3 py-2 flex items-center justify-between bg-white">
       <div class="flex items-center space-x-2">
-        <button class="text-slate-600 hover:text-slate-900 transition p-1 rounded-lg hover:bg-slate-100">
-          <ChevronLeft class="w-4 h-4" />
+        <button
+          @click="handleBack"
+          class="text-slate-700 hover:text-slate-900 transition p-1.5 rounded-xl hover:bg-slate-100 active:bg-slate-200 cursor-pointer flex items-center justify-center"
+          title="ย้อนกลับ / หน้าแรก"
+        >
+          <ChevronLeft class="w-4 h-4 stroke-[2.5]" />
         </button>
         <div class="flex items-center space-x-1.5">
           <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shadow-xs font-bold">
