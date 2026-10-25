@@ -31,9 +31,9 @@ async function onProceedToPayment() {
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-slate-100/70 relative">
+  <div class="flex flex-col h-full bg-[#F8FAFC] relative">
     <!-- Header banner -->
-    <div class="bg-white px-3.5 py-2.5 border-b border-slate-200 shadow-2xs">
+    <div class="bg-white px-3.5 py-2.5 border-b border-slate-200/80 shadow-2xs">
       <div class="flex items-center justify-between mb-2">
         <div>
           <h2 class="text-xs font-extrabold text-slate-900 flex items-center space-x-1.5">
