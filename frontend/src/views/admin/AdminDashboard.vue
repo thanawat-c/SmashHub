@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useAdminStore } from '@/stores/adminStore'
+import { useAuthStore } from '@/stores/authStore'
 import LiveCourtBoard from './components/LiveCourtBoard.vue'
 import OrderAuditTable from './components/OrderAuditTable.vue'
 import SlipAuditDrawer from './components/SlipAuditDrawer.vue'
@@ -8,10 +9,11 @@ import ReceiptModal from './components/ReceiptModal.vue'
 import AddItemsModal from './components/AddItemsModal.vue'
 import {
   LayoutGrid, ListFilter, DollarSign, Activity, Users,
-  AlertTriangle, TrendingUp, Sparkles, CheckCircle2, Clock
+  AlertTriangle, TrendingUp, Sparkles, CheckCircle2, Clock, LogIn, ShieldAlert
 } from 'lucide-vue-next'
 
 const adminStore = useAdminStore()
+const authStore = useAuthStore()
 const activeTab = ref('board') // 'board' or 'orders'
 
 onMounted(() => {
@@ -45,6 +47,36 @@ const checkedInCount = computed(() => {
 
 <template>
   <div class="flex-1 bg-[#F8FAFC] flex flex-col p-4 sm:p-6 space-y-4">
+    <!-- Admin Access Warning Banner if not Admin -->
+    <div
+      v-if="!authStore.isAdmin"
+      class="bg-amber-50 border border-amber-200/90 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-2xs"
+    >
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+          👑
+        </div>
+        <div>
+          <div class="text-xs font-bold text-amber-900">หน้านี้สำหรับผู้จัดการร้าน (Admin Backoffice)</div>
+          <p class="text-[11px] text-amber-700">คุณยังไม่ได้เข้าสู่ระบบด้วยสิทธิ์ผู้ดูแลระบบ (Admin) หรือเข้าสู่ระบบในฐานะลูกค้าอยู่</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button
+          @click="authStore.demoLogin('ADMIN')"
+          class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center space-x-1.5"
+        >
+          <span>👑 สลับเป็น Admin ทันที (1-Click)</span>
+        </button>
+        <button
+          @click="authStore.openAuthModal('login')"
+          class="px-3 py-1.5 bg-white hover:bg-amber-100/60 text-slate-700 border border-amber-200 rounded-xl text-xs font-semibold transition"
+        >
+          <span>กรอกรหัสผ่านเอง</span>
+        </button>
+      </div>
+    </div>
     <!-- Top Header Banner & Real-Time Sync Indicator -->
     <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
