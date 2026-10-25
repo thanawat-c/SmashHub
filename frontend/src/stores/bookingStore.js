@@ -123,9 +123,9 @@ export const useBookingStore = defineStore('booking', () => {
     errorMessage.value = ''
 
     const payload = {
-      customer_name: customerProfile.displayName,
-      customer_phone: customerProfile.phone,
-      line_user_id: customerProfile.lineUserId,
+      customer_name: customerProfile?.displayName || customerProfile?.display_name || 'ลูกค้าทั่วไป',
+      customer_phone: customerProfile?.phone || '089-111-2233',
+      line_user_id: customerProfile?.lineUserId || customerProfile?.line_user_id,
       play_date: selectedDate.value,
       court_slots: selectedSlots.value.map(s => ({
         court_id: s.courtId,
