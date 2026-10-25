@@ -44,14 +44,16 @@ const (
 
 // User represents customer or admin
 type User struct {
-	ID          uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	LineUserID  *string   `gorm:"type:varchar(100);unique" json:"line_user_id,omitempty"`
-	DisplayName string    `gorm:"type:varchar(255);not null" json:"display_name"`
-	PictureURL  string    `gorm:"type:text" json:"picture_url,omitempty"`
-	Phone       string    `gorm:"type:varchar(20)" json:"phone,omitempty"`
-	Role        string    `gorm:"type:varchar(20);default:'CUSTOMER';not null" json:"role"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID           uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	LineUserID   *string   `gorm:"type:varchar(100);unique" json:"line_user_id,omitempty"`
+	DisplayName  string    `gorm:"type:varchar(255);not null" json:"display_name"`
+	PictureURL   string    `gorm:"type:text" json:"picture_url,omitempty"`
+	Phone        string    `gorm:"type:varchar(20)" json:"phone,omitempty"`
+	Email        string    `gorm:"type:varchar(255)" json:"email,omitempty"`
+	PasswordHash string    `gorm:"type:varchar(255)" json:"-"`
+	Role         string    `gorm:"type:varchar(20);default:'CUSTOMER';not null" json:"role"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // Court represents a badminton court

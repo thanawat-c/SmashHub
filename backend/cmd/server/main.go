@@ -30,6 +30,7 @@ func main() {
 	bookingService := services.NewBookingService(db)
 	slipService := services.NewSlipService(db)
 	adminService := services.NewAdminService(db)
+	authService := services.NewAuthService(db)
 	cronWorker := services.NewCronWorker(db)
 
 	// 3. Start Background Cron Worker (30s interval for auto-expiring bookings)
@@ -41,6 +42,7 @@ func main() {
 	courtHandler := handlers.NewCourtHandler(bookingService)
 	bookingHandler := handlers.NewBookingHandler(bookingService, slipService, db)
 	adminHandler := handlers.NewAdminHandler(adminService, bookingService, cronWorker)
+	authHandler := handlers.NewAuthHandler(authService)
 	sseHandler := handlers.NewSSEHandler()
 
 	// 5. Setup Gin Router
@@ -74,6 +76,16 @@ func main() {
 		// Customer & Courts Availability
 		api.GET("/courts/availability", courtHandler.GetCourtAvailability)
 		api.GET("/products", courtHandler.GetProducts)
+
+		// Authentication & User Management
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/demo-login", authHandler.DemoLogin)
+			auth.GET("/me", authHandler.GetMe)
+			auth.POST("/logout", authHandler.Logout)
+		}
 
 		// Booking & Slip Verification
 		api.POST("/bookings", bookingHandler.CreateBooking)

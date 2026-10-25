@@ -70,6 +70,9 @@ func InitDB(dsn string) (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(50)
 
 	DB = db
+	// AutoMigrate user schema extensions (email, password_hash)
+	_ = db.AutoMigrate(&User{})
+
 	log.Println("Database connection established successfully")
 	return db, nil
 }
