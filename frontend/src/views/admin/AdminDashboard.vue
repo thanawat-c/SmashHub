@@ -44,33 +44,33 @@ const checkedInCount = computed(() => {
 </script>
 
 <template>
-  <div class="flex-1 bg-slate-100 flex flex-col p-3 sm:p-5 space-y-4">
+  <div class="flex-1 bg-[#F8FAFC] flex flex-col p-4 sm:p-6 space-y-4">
     <!-- Top Header Banner & Real-Time Sync Indicator -->
     <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white text-lg shadow-sm border border-slate-700">
+        <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white text-lg shadow-xs">
           🏸
         </div>
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="text-base font-extrabold text-slate-900 tracking-tight">SmashHub Backoffice & POS</h1>
-            <span class="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-300 font-mono font-bold px-1.5 py-0.2 rounded-full">v1.2 SaaS</span>
+            <span class="text-[10px] bg-slate-100 text-slate-600 border border-slate-200 font-mono font-semibold px-2 py-0.5 rounded-md">Management</span>
           </div>
-          <p class="text-[11px] text-slate-500">ระบบบริหารสนามแบดมินตัน, มินิสโตร์แคชเชียร์ และตรวจสลิปอัตโนมัติ</p>
+          <p class="text-[11px] text-slate-500">ระบบบริหารจัดการสนามแบดมินตัน มินิสโตร์แคชเชียร์ และตรวจสอบสลิป</p>
         </div>
       </div>
 
       <!-- Real-Time SSE Indicator Pill -->
       <div class="flex items-center space-x-2">
-        <div class="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs font-mono shadow-2xs">
+        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono">
           <span
             :class="[
               'w-2 h-2 rounded-full transition-all',
-              adminStore.isSSEConnected ? 'bg-emerald-500 animate-pulse shadow-glow-emerald' : 'bg-rose-500'
+              adminStore.isSSEConnected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
             ]"
           ></span>
-          <span :class="adminStore.isSSEConnected ? 'text-emerald-700 font-bold' : 'text-slate-500'">
-            {{ adminStore.isSSEConnected ? 'LIVE SYNC (SSE)' : 'CONNECTING' }}
+          <span :class="adminStore.isSSEConnected ? 'text-emerald-800 font-bold' : 'text-slate-500'">
+            {{ adminStore.isSSEConnected ? 'SSE Live Connected' : 'Connecting...' }}
           </span>
         </div>
       </div>

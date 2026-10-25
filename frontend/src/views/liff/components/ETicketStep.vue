@@ -29,26 +29,26 @@ function shareTicket() {
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-slate-900/95 overflow-y-auto p-4 space-y-4 text-white">
+  <div class="flex flex-col h-full bg-[#F8FAFC] overflow-y-auto p-4 space-y-4 text-slate-800">
     <!-- Success Celebration Tag -->
     <div class="text-center pt-2">
-      <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full mb-1.5 border border-emerald-500/30">
+      <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl mb-2 border border-emerald-200 shadow-xs">
         <CheckCircle2 class="w-6 h-6" />
       </div>
-      <h2 class="text-base font-extrabold text-white">การจองได้รับการยืนยันแล้ว!</h2>
-      <p class="text-[11px] text-slate-400">ระบบตรวจสอบสลิปผ่านฉลุย บัตรเข้าสนามพร้อมใช้งาน</p>
+      <h2 class="text-base font-extrabold text-slate-900">การจองได้รับการยืนยันแล้ว</h2>
+      <p class="text-[11px] text-slate-500">ตรวจสอบการชำระเงินเรียบร้อย บัตรเข้าสนามพร้อมใช้งาน</p>
     </div>
 
     <!-- Authentic Boarding-Pass E-Ticket Card -->
-    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden text-slate-800 relative border border-slate-200">
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden text-slate-800 relative border border-slate-200/90">
       <!-- Ticket Top Accent Bar -->
       <div class="bg-slate-900 text-white p-4">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-1.5 font-bold tracking-wider text-xs">
+          <div class="flex items-center space-x-2 font-bold tracking-wider text-xs">
             <span>🏸</span>
-            <span class="text-emerald-400">SMASHHUB ARENA</span>
+            <span class="tracking-tight font-extrabold">SMASHHUB ARENA</span>
           </div>
-          <span class="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono font-bold">
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono font-bold">
             CONFIRMED
           </span>
         </div>
@@ -79,7 +79,7 @@ function shareTicket() {
           </div>
           <div class="text-right">
             <div class="text-[10px] text-slate-400 font-medium">สถานะ Check-in</div>
-            <div class="inline-flex items-center space-x-1 text-emerald-700 font-bold text-[11px]">
+            <div class="inline-flex items-center space-x-1.5 text-emerald-700 font-bold text-[11px]">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>รอเข้าสนาม</span>
             </div>
@@ -92,7 +92,7 @@ function shareTicket() {
           <div
             v-for="court in bookingStore.activeBooking?.booking?.courts || bookingStore.selectedSlots"
             :key="court.id || (court.courtId + '-' + court.startHour)"
-            class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100"
+            class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100"
           >
             <span class="font-extrabold text-slate-900 text-xs">
               คอร์ท {{ court.court?.court_number || court.courtNumber }}
@@ -116,15 +116,15 @@ function shareTicket() {
       </div>
 
       <!-- Ticket Perforated Cutout Line with Side Notches -->
-      <div class="relative py-1 bg-slate-50 border-t border-dashed border-slate-300">
-        <div class="absolute -left-3 -top-2.5 w-5 h-5 rounded-full bg-slate-900 border-r border-slate-800"></div>
-        <div class="absolute -right-3 -top-2.5 w-5 h-5 rounded-full bg-slate-900 border-l border-slate-800"></div>
+      <div class="relative py-1 bg-slate-50/80 border-t border-dashed border-slate-300">
+        <div class="absolute -left-3 -top-2.5 w-5 h-5 rounded-full bg-[#F8FAFC] border-r border-slate-200"></div>
+        <div class="absolute -right-3 -top-2.5 w-5 h-5 rounded-full bg-[#F8FAFC] border-l border-slate-200"></div>
       </div>
 
       <!-- Gate QR Code Section -->
       <div class="p-4 bg-slate-50 text-center space-y-1.5">
-        <div class="text-[11px] font-extrabold text-slate-800">สแกน QR Code สำหรับ Check-in หน้าสนาม</div>
-        <div class="inline-block bg-white p-2.5 rounded-2xl border-2 border-slate-200 shadow-xs">
+        <div class="text-[11px] font-bold text-slate-800">สแกน QR Code สำหรับ Check-in หน้าเคาน์เตอร์</div>
+        <div class="inline-block bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs">
           <img
             :src="`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent('SMASHHUB_PASS_' + (bookingStore.activeBooking?.booking?.booking_no || 'DEMO'))}`"
             alt="Check-in Pass QR"
@@ -136,10 +136,10 @@ function shareTicket() {
     </div>
 
     <!-- Action Buttons -->
-    <div class="space-y-2">
+    <div class="space-y-2 pt-1">
       <button
         @click="shareTicket"
-        class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5"
+        class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-xs shadow-xs transition flex items-center justify-center space-x-1.5"
       >
         <Check v-if="isShared" class="w-4 h-4 text-emerald-200" />
         <Share2 v-else class="w-4 h-4" />
@@ -148,9 +148,9 @@ function shareTicket() {
 
       <button
         @click="bookAnother"
-        class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl font-bold text-xs border border-slate-700 transition flex items-center justify-center space-x-1.5"
+        class="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-2xl font-bold text-xs border border-slate-200 shadow-2xs transition flex items-center justify-center space-x-1.5"
       >
-        <RotateCcw class="w-3.5 h-3.5" />
+        <RotateCcw class="w-3.5 h-3.5 text-slate-500" />
         <span>จองคอร์ทอื่นเพิ่มเติม</span>
       </button>
     </div>
