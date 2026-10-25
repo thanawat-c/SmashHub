@@ -91,11 +91,6 @@ function goToStep(stepNum) {
         <PaymentStep v-else-if="bookingStore.currentStep === 3" />
         <ETicketStep v-else-if="bookingStore.currentStep === 4" />
       </div>
-
-      <!-- iOS Bottom Home Indicator Bar (Clean Light Mode) -->
-      <div class="h-4 bg-white flex items-center justify-center flex-shrink-0">
-        <div class="w-28 h-1 bg-slate-300 rounded-full"></div>
-      </div>
     </div>
   </div>
 </template>
