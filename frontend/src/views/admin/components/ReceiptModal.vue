@@ -14,7 +14,79 @@ function close() {
 }
 
 function handlePrint() {
-  window.print()
+  const printContent = document.getElementById('printable-receipt')
+  if (!printContent) return
+
+  // Create an isolated hidden iframe for printing to prevent Vue / Element Plus dialog style bleed
+  const iframe = document.createElement('iframe')
+  iframe.style.position = 'fixed'
+  iframe.style.right = '0'
+  iframe.style.bottom = '0'
+  iframe.style.width = '0'
+  iframe.style.height = '0'
+  iframe.style.border = '0'
+  iframe.style.visibility = 'hidden'
+  document.body.appendChild(iframe)
+
+  // Grab all page stylesheets (Tailwind, Element Plus, Google Fonts)
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map(el => el.outerHTML)
+    .join('\n')
+
+  const doc = iframe.contentWindow.document
+  doc.open()
+  doc.write(`
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+      <meta charset="utf-8">
+      <title>ใบเสร็จ_${props.booking?.booking_no || 'RECEIPT'}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+      ${styles}
+      <style>
+        @page {
+          size: A4 portrait;
+          margin: 10mm 15mm;
+        }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        html, body {
+          background: #ffffff !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+        .receipt-print-wrapper {
+          max-width: 580px;
+          margin: 0 auto;
+          padding: 16px;
+          background: #ffffff;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-print-wrapper">
+        ${printContent.innerHTML}
+      </div>
+    </body>
+    </html>
+  `)
+  doc.close()
+
+  // Trigger print after iframe styles load
+  setTimeout(() => {
+    iframe.contentWindow.focus()
+    iframe.contentWindow.print()
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe)
+      }
+    }, 1500)
+  }, 350)
 }
 </script>
 

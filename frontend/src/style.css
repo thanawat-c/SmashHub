@@ -27,19 +27,17 @@
 
 /* Print Styles for Receipts */
 @media print {
-  body * {
-    visibility: hidden;
+  @page {
+    size: auto;
+    margin: 10mm;
   }
-  #printable-receipt, #printable-receipt * {
-    visibility: visible;
+  html, body {
+    background: #ffffff !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
-  #printable-receipt {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20px;
-    background: white;
+  header, nav, aside {
+    display: none !important;
   }
 }
