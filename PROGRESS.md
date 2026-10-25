@@ -94,3 +94,4 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 4 (`ae9de1e`)**: Polished Admin Dashboard & POS styling with clean `#F8FAFC` studio theme and modernized E-Ticket to a clean, crisp light-mode boarding pass.
   - **Task 5 (`46a63fb`)**: Eliminated broken nested phone frames and unified clean mobile viewport across `/liff` and `/demo`.
   - **Task 6 (`656250c`)**: Harmonized background colors and refined mini-store step styling.
+  - **Task 8 (`5e76f66`)**: Fixed Receipt PDF/Print blank page and overflow issue by isolating print execution inside a clean hidden iframe with exact A4 page sizing and Tailwind styles.
