@@ -96,3 +96,8 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 6 (`656250c`)**: Harmonized background colors and refined mini-store step styling.
   - **Task 8 (`5e76f66`)**: Fixed Receipt PDF/Print blank page and overflow issue by isolating print execution inside a clean hidden iframe with exact A4 page sizing and Tailwind styles.
   - **Task 9 (`4bd943e`)**: Enabled interactive back navigation by connecting the `<` button on LINE LIFF header and making step indicator chips (1, 2, 3) clickable to freely jump back to earlier steps or reset to Step 1.
+- [x] **Phase 10: Complete User Authentication (Register, Login, Logout) & Header Cleanliness** (Completed)
+  - **Task 10.1 (`de3f43c`)**: Hid `<` back arrow on Step 1 (`v-if="bookingStore.currentStep > 1"`) and stripped fake iOS status bar (9:41 5G battery) and fake Dynamic Island.
+  - **Task 10.2 (`dde86d7`)**: Backend Auth APIs (`POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/demo-login`, `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`) with bcrypt password hashing and token generation.
+  - **Task 10.3 (`4215866`)**: Frontend Pinia `authStore.js` with session persistence, role computation, and booking store integration.
+  - **Task 10.4 (`069bc7e`)**: `AuthModal.vue` component, App.vue navigation login/register button, logged-in user profile pill with dropdown logout, and Admin Dashboard access gate.
