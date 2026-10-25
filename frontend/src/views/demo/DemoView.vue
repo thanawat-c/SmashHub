@@ -281,8 +281,8 @@ function resetDemo() {
           </span>
         </div>
 
-        <!-- Realistic iPhone Titanium Frame with Dynamic Island -->
-        <div class="w-full h-full max-h-[calc(100vh-140px)] bg-slate-900 rounded-[44px] overflow-hidden border-[8px] border-slate-800 shadow-phone-bezel flex flex-col relative ring-1 ring-slate-700/80">
+        <!-- Clean Mobile View Container -->
+        <div class="w-full h-full flex flex-col overflow-hidden rounded-2xl border border-slate-800 shadow-lg">
           <LiffView />
         </div>
       </div>

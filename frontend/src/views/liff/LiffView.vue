@@ -18,9 +18,9 @@ const steps = [
 </script>
 
 <template>
-  <div class="min-h-[calc(100vh-56px)] bg-slate-100 flex items-center justify-center sm:py-6 sm:px-4 select-none">
-    <!-- Smartphone Frame (Centered on desktop, full screen on mobile) -->
-    <div class="w-full sm:max-w-[416px] h-[calc(100vh-56px)] sm:h-[860px] sm:max-h-[92vh] bg-white sm:rounded-[44px] sm:border-[8px] sm:border-slate-900 sm:shadow-2xl flex flex-col justify-between overflow-hidden relative">
+  <div class="min-h-[calc(100vh-56px)] bg-slate-100/90 flex items-center justify-center select-none">
+    <!-- Clean Authentic Mobile-First Container (Full width on mobile, sleek centered max-w-[430px] on desktop) -->
+    <div class="w-full sm:max-w-[430px] h-[calc(100vh-56px)] bg-white sm:border-x sm:border-slate-200/90 sm:shadow-lg flex flex-col justify-between overflow-hidden relative">
       <!-- Top LIFF Navigation & Profile Bar -->
       <LiffHeader />
 
