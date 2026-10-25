@@ -81,28 +81,28 @@ const hourlySlotsList = computed(() => {
 function getSlotColorClass(court, slot) {
   const isSelected = bookingStore.isSlotSelected(court.court_id, slot.start_hour)
   if (isSelected) {
-    return 'bg-emerald-500 text-slate-950 font-extrabold border-emerald-400 shadow-glow-emerald ring-2 ring-emerald-300 scale-[0.98]'
+    return 'bg-emerald-600 text-white font-bold border-emerald-700 shadow-xs scale-[0.98]'
   }
 
   switch (slot.status) {
     case 'AVAILABLE':
-      return 'bg-white hover:bg-emerald-50 text-slate-800 border-slate-200 cursor-pointer transition hover:border-emerald-400 hover:shadow-xs'
+      return 'bg-white hover:bg-emerald-50 text-slate-800 border-slate-200 cursor-pointer transition hover:border-emerald-400 hover:shadow-2xs'
     case 'LOCKED_PENDING':
-      return 'bg-amber-100/90 text-amber-900 border-amber-300 cursor-not-allowed font-medium'
+      return 'bg-amber-50 text-amber-900 border-amber-200 cursor-not-allowed font-medium'
     case 'BOOKED':
-      return 'bg-slate-200/80 text-slate-400 border-slate-200 cursor-not-allowed'
+      return 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
     case 'MAINTENANCE':
       return 'bg-rose-50 text-rose-600 border-rose-200 cursor-not-allowed'
     default:
-      return 'bg-slate-100 text-slate-500 border-slate-200'
+      return 'bg-slate-50 text-slate-500 border-slate-200'
   }
 }
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-slate-100 relative">
+  <div class="flex flex-col h-full bg-[#F8FAFC] relative">
     <!-- Date & Filter Bar (Clean Compact Sticky Header) -->
-    <div class="bg-white px-3 py-2 border-b border-slate-200 shadow-2xs sticky top-0 z-10 space-y-1.5">
+    <div class="bg-white px-3 py-2 border-b border-slate-200/80 shadow-2xs sticky top-0 z-10 space-y-1.5">
       <!-- Date Carousel Header with Quick Day Selector -->
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-1.5 text-xs font-extrabold text-slate-800">
@@ -115,7 +115,7 @@ function getSlotColorClass(court, slot) {
             @click="courtFilter = 'ALL'"
             :class="[
               'px-2 py-0.5 rounded-md transition font-medium',
-              courtFilter === 'ALL' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500'
+              courtFilter === 'ALL' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-500'
             ]"
           >
             ทั้งหมด
@@ -124,7 +124,7 @@ function getSlotColorClass(court, slot) {
             @click="courtFilter = 'PVC'"
             :class="[
               'px-2 py-0.5 rounded-md transition font-medium',
-              courtFilter === 'PVC' ? 'bg-white text-emerald-700 shadow-xs font-bold' : 'text-slate-500'
+              courtFilter === 'PVC' ? 'bg-white text-emerald-700 shadow-2xs font-bold' : 'text-slate-500'
             ]"
           >
             PVC (1-4)
@@ -133,7 +133,7 @@ function getSlotColorClass(court, slot) {
             @click="courtFilter = 'ACRYLIC'"
             :class="[
               'px-2 py-0.5 rounded-md transition font-medium',
-              courtFilter === 'ACRYLIC' ? 'bg-white text-blue-700 shadow-xs font-bold' : 'text-slate-500'
+              courtFilter === 'ACRYLIC' ? 'bg-white text-blue-700 shadow-2xs font-bold' : 'text-slate-500'
             ]"
           >
             VIP (5-6)
@@ -150,7 +150,7 @@ function getSlotColorClass(court, slot) {
           :class="[
             'px-2.5 py-1 rounded-xl text-center transition flex-shrink-0 border min-w-[58px]',
             bookingStore.selectedDate === chip.val
-              ? 'bg-slate-900 text-white border-slate-900 shadow-sm ring-1 ring-emerald-500/50'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
               : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
           ]"
         >
@@ -178,11 +178,11 @@ function getSlotColorClass(court, slot) {
       </div>
 
       <!-- VIEW A: Modern Time Slots List (Playtomic / MATCHi Benchmark) -->
-      <div v-else-if="viewMode === 'slots'" class="space-y-2.5">
+      <div v-else class="space-y-2.5">
         <div
           v-for="hourGroup in hourlySlotsList"
           :key="hourGroup.hour"
-          class="bg-white rounded-2xl border border-slate-200/90 p-3 shadow-2xs hover:border-slate-300 transition"
+          class="bg-white rounded-2xl border border-slate-200/80 p-3 shadow-2xs hover:border-slate-300 transition"
         >
           <!-- Hour Header -->
           <div class="flex items-center justify-between mb-2">
@@ -215,9 +215,9 @@ function getSlotColorClass(court, slot) {
               :class="[
                 'p-2 rounded-xl border text-left transition select-none flex items-center justify-between',
                 item.isSelected
-                  ? 'bg-emerald-500 text-slate-950 font-extrabold border-emerald-400 shadow-glow-emerald ring-2 ring-emerald-300'
+                  ? 'bg-emerald-600 text-white font-bold border-emerald-700 shadow-xs'
                   : item.slot.status === 'AVAILABLE'
-                  ? 'bg-slate-50 hover:bg-emerald-50/60 text-slate-800 border-slate-200 hover:border-emerald-400'
+                  ? 'bg-slate-50/70 hover:bg-emerald-50/50 text-slate-800 border-slate-200 hover:border-emerald-400'
                   : item.slot.status === 'LOCKED_PENDING'
                   ? 'bg-amber-50/70 text-amber-800 border-amber-200/80 cursor-not-allowed opacity-80'
                   : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-70'
@@ -229,13 +229,13 @@ function getSlotColorClass(court, slot) {
                   <span
                     :class="[
                       'text-[8px] px-1 py-0.2 rounded-xs font-semibold',
-                      item.court.court_type === 'ACRYLIC' ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-700'
+                      item.isSelected ? 'bg-white/20 text-white' : (item.court.court_type === 'ACRYLIC' ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-700')
                     ]"
                   >
                     {{ item.court.court_type === 'ACRYLIC' ? 'VIP' : 'PVC' }}
                   </span>
                 </div>
-                <div class="text-[10px] font-mono mt-0.5">
+                <div :class="['text-[10px] font-mono mt-0.5', item.isSelected ? 'text-white/90' : 'text-slate-600']">
                   ฿{{ item.slot.hourly_rate }}
                 </div>
               </div>
@@ -244,7 +244,7 @@ function getSlotColorClass(court, slot) {
               <div class="flex-shrink-0">
                 <div
                   v-if="item.isSelected"
-                  class="w-4 h-4 rounded-full bg-slate-950 text-emerald-400 flex items-center justify-center text-[10px]"
+                  class="w-4 h-4 rounded-full bg-white text-emerald-700 flex items-center justify-center text-[10px] font-bold"
                 >
                   ✓
                 </div>
@@ -265,82 +265,18 @@ function getSlotColorClass(court, slot) {
           </div>
         </div>
       </div>
-
-      <!-- VIEW B: Full Horizontal Scrolling Court Grid (Spacious, authentic court textures) -->
-      <div v-else class="overflow-x-auto rounded-2xl border border-slate-200/90 bg-white shadow-2xs p-2">
-        <div class="min-w-[540px]">
-          <!-- Court Headers -->
-          <div class="grid grid-cols-7 gap-1.5 pb-2 border-b border-slate-200 sticky top-0 bg-white z-5">
-            <div class="text-[10px] font-mono font-bold text-slate-400 flex items-center justify-center">
-              เวลา
-            </div>
-            <div
-              v-for="court in filteredCourts"
-              :key="court.court_id"
-              class="bg-slate-50 border border-slate-200 rounded-xl p-1.5 text-center"
-            >
-              <div class="text-xs font-extrabold text-slate-900 leading-tight">คอร์ท {{ court.court_number }}</div>
-              <div class="text-[9px] text-emerald-700 font-semibold truncate mt-0.5">
-                {{ court.court_type === 'ACRYLIC' ? 'VIP Acrylic' : 'PVC Mat' }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Hours Rows -->
-          <div class="space-y-1.5 mt-2">
-            <div
-              v-for="hour in operatingHours"
-              :key="hour"
-              class="grid grid-cols-7 gap-1.5 items-center"
-            >
-              <!-- Time Column -->
-              <div class="text-[10px] font-mono font-bold text-slate-600 text-center leading-tight">
-                <div>{{ String(hour).padStart(2, '0') }}:00</div>
-                <div :class="['text-[8px] font-sans font-medium', hour >= 17 ? 'text-amber-600 font-bold' : 'text-slate-400']">
-                  {{ hour >= 17 ? 'Peak' : 'ปกติ' }}
-                </div>
-              </div>
-
-              <!-- Court Slots -->
-              <div
-                v-for="court in filteredCourts"
-                :key="court.court_id + '-' + hour"
-                class="relative"
-              >
-                <template v-for="slot in court.slots.filter(s => s.start_hour === hour)" :key="slot.start_hour">
-                  <button
-                    @click="bookingStore.toggleCourtSlot(court, slot)"
-                    :disabled="slot.status !== 'AVAILABLE'"
-                    :class="[
-                      'w-full h-11 rounded-xl border flex flex-col items-center justify-center text-[10px] p-0.5 transition select-none',
-                      getSlotColorClass(court, slot)
-                    ]"
-                  >
-                    <span class="font-bold leading-tight font-mono">
-                      {{ bookingStore.isSlotSelected(court.court_id, hour) ? '✓ เลือก' : `${slot.hourly_rate}฿` }}
-                    </span>
-                    <span class="text-[8px] opacity-75 truncate max-w-full">
-                      {{ slot.status === 'AVAILABLE' ? 'ว่าง' : slot.status === 'LOCKED_PENDING' ? 'รอโอน' : 'เต็ม' }}
-                    </span>
-                  </button>
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Floating Natural Thumb Action Bar (Playtomic / LINE LIFF Standard) -->
+    <!-- Floating Bottom Checkout Dock (Clean Light Mode Standard) -->
     <div class="absolute bottom-2 left-2 right-2 z-20">
-      <div class="bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-slate-700/80">
+      <div class="bg-white/95 backdrop-blur-md text-slate-900 p-3 rounded-2xl shadow-lg border border-slate-200/90">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-[10px] text-slate-400 font-medium">
+            <div class="text-[10px] text-slate-500 font-medium">
               เลือกไว้ {{ bookingStore.selectedSlots.length }} ช่วงเวลา
             </div>
-            <div class="text-base font-extrabold text-white font-mono flex items-baseline space-x-1">
-              <span class="text-emerald-400">฿{{ bookingStore.courtTotal.toLocaleString() }}</span>
+            <div class="text-base font-black text-slate-900 font-mono flex items-baseline space-x-1">
+              <span class="text-emerald-700">฿{{ bookingStore.courtTotal.toLocaleString() }}</span>
               <span class="text-[10px] text-slate-400 font-normal font-sans">({{ bookingStore.selectedSlots.length }} ชม.)</span>
             </div>
           </div>
@@ -349,10 +285,10 @@ function getSlotColorClass(court, slot) {
             @click="bookingStore.currentStep = 2"
             :disabled="bookingStore.selectedSlots.length === 0"
             :class="[
-              'px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center space-x-1.5 shadow-md active:scale-95',
+              'px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center space-x-1.5 shadow-xs active:scale-95',
               bookingStore.selectedSlots.length > 0
-                ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-glow-emerald cursor-pointer'
-                : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer'
+                : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
             ]"
           >
             <span>ถัดไป: สั่งสินค้า</span>
@@ -361,14 +297,14 @@ function getSlotColorClass(court, slot) {
         </div>
 
         <!-- Selected slots tags preview -->
-        <div v-if="bookingStore.selectedSlots.length > 0" class="flex space-x-1 overflow-x-auto pt-2 mt-1.5 border-t border-slate-800 scrollbar-none">
+        <div v-if="bookingStore.selectedSlots.length > 0" class="flex space-x-1 overflow-x-auto pt-2 mt-1.5 border-t border-slate-100 scrollbar-none">
           <span
             v-for="slot in bookingStore.selectedSlots"
             :key="slot.courtId + '-' + slot.startHour"
-            class="inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-[10px] font-mono whitespace-nowrap"
+            class="inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-mono whitespace-nowrap"
           >
             <span>คอร์ท {{ slot.courtNumber }} ({{ slot.startHour }}:00)</span>
-            <button @click="bookingStore.toggleCourtSlot({ court_id: slot.courtId }, { start_hour: slot.startHour, status: 'AVAILABLE' })" class="text-emerald-400 hover:text-white ml-0.5">×</button>
+            <button @click="bookingStore.toggleCourtSlot({ court_id: slot.courtId }, { start_hour: slot.startHour, status: 'AVAILABLE' })" class="text-emerald-700 hover:text-slate-900 ml-0.5">×</button>
           </span>
         </div>
       </div>
