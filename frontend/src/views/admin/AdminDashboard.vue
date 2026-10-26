@@ -7,14 +7,16 @@ import OrderAuditTable from './components/OrderAuditTable.vue'
 import SlipAuditDrawer from './components/SlipAuditDrawer.vue'
 import ReceiptModal from './components/ReceiptModal.vue'
 import AddItemsModal from './components/AddItemsModal.vue'
+import AdminInventoryManagement from './components/AdminInventoryManagement.vue'
 import {
   LayoutGrid, ListFilter, DollarSign, Activity, Users,
-  AlertTriangle, TrendingUp, Sparkles, CheckCircle2, Clock, LogIn, ShieldAlert
+  AlertTriangle, TrendingUp, Sparkles, CheckCircle2, Clock, LogIn, ShieldAlert,
+  Settings2
 } from 'lucide-vue-next'
 
 const adminStore = useAdminStore()
 const authStore = useAuthStore()
-const activeTab = ref('board') // 'board' or 'orders'
+const activeTab = ref('board') // 'board', 'orders', or 'inventory'
 
 onMounted(() => {
   adminStore.connectSSE()
@@ -216,12 +218,26 @@ const checkedInCount = computed(() => {
           {{ pendingReviewCount }}
         </span>
       </button>
+
+      <button
+        @click="activeTab = 'inventory'"
+        :class="[
+          'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2',
+          activeTab === 'inventory'
+            ? 'bg-slate-900 text-white shadow-sm'
+            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+        ]"
+      >
+        <Settings2 class="w-4 h-4" />
+        <span>Court & Stock Control (จัดการสนาม & เติมสต็อก)</span>
+      </button>
     </div>
 
     <!-- Active Tab Content Area -->
     <div class="flex-1">
       <LiveCourtBoard v-if="activeTab === 'board'" />
       <OrderAuditTable v-else-if="activeTab === 'orders'" />
+      <AdminInventoryManagement v-else-if="activeTab === 'inventory'" />
     </div>
 
     <!-- Modals & Drawers -->

@@ -164,3 +164,65 @@ func (s *AdminService) UpdateCheckInStatus(bookingID uuid.UUID, status string) (
 
 	return &booking, nil
 }
+
+// UpdateCourtStatus toggles court status (ACTIVE or MAINTENANCE) and hourly rate
+func (s *AdminService) UpdateCourtStatus(courtID uint, status string, normalRate, peakRate float64) (*models.Court, error) {
+	var court models.Court
+	if err := s.db.First(&court, courtID).Error; err != nil {
+		return nil, fmt.Errorf("ไม่พบคอร์ทรหัส %d", courtID)
+	}
+
+	if status != "" {
+		court.Status = status
+	}
+	if normalRate > 0 {
+		court.NormalRate = normalRate
+	}
+	if peakRate > 0 {
+		court.PeakRate = peakRate
+	}
+
+	if err := s.db.Save(&court).Error; err != nil {
+		return nil, err
+	}
+
+	Hub.Broadcast("COURT_UPDATED", map[string]interface{}{
+		"court_id":    court.ID,
+		"court_number": court.CourtNumber,
+		"status":      court.Status,
+	})
+
+	return &court, nil
+}
+
+// RestockProduct updates stock quantity for mini-store products
+func (s *AdminService) RestockProduct(productID uint, addQty int, newPrice float64) (*models.Product, error) {
+	var product models.Product
+	if err := s.db.First(&product, productID).Error; err != nil {
+		return nil, fmt.Errorf("ไม่พบสินค้ารหัส %d", productID)
+	}
+
+	if addQty != 0 {
+		product.StockQty += addQty
+		if product.StockQty < 0 {
+			product.StockQty = 0
+		}
+	}
+	if newPrice > 0 {
+		product.Price = newPrice
+	}
+
+	if err := s.db.Save(&product).Error; err != nil {
+		return nil, err
+	}
+
+	Hub.Broadcast("PRODUCT_RESTOCKED", map[string]interface{}{
+		"product_id": product.ID,
+		"name":       product.Name,
+		"stock_qty":  product.StockQty,
+		"price":      product.Price,
+	})
+
+	return &product, nil
+}
+

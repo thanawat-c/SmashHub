@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -150,3 +151,59 @@ func (h *AdminHandler) TriggerCron(c *gin.Context) {
 		"expired_count": expiredCount,
 	})
 }
+
+// UpdateCourt handles PATCH /api/v1/admin/courts/:id
+func (h *AdminHandler) UpdateCourt(c *gin.Context) {
+	idParam := c.Param("id")
+	var courtID uint
+	if _, err := fmt.Sscanf(idParam, "%d", &courtID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสสนามไม่ถูกต้อง"})
+		return
+	}
+
+	var req struct {
+		Status     string  `json:"status"` // ACTIVE, MAINTENANCE
+		NormalRate float64 `json:"normal_rate"`
+		PeakRate   float64 `json:"peak_rate"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	court, err := h.adminService.UpdateCourtStatus(courtID, req.Status, req.NormalRate, req.PeakRate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "อัปเดตสถานะคอร์ทสนามเรียบร้อยแล้ว",
+		"data":    court,
+	})
+}
+
+// RestockProduct handles POST /api/v1/admin/products/:id/restock
+func (h *AdminHandler) RestockProduct(c *gin.Context) {
+	idParam := c.Param("id")
+	var productID uint
+	if _, err := fmt.Sscanf(idParam, "%d", &productID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสสินค้าไม่ถูกต้อง"})
+		return
+	}
+
+	var req struct {
+		AddQty int     `json:"add_qty"`
+		Price  float64 `json:"price"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	product, err := h.adminService.RestockProduct(productID, req.AddQty, req.Price)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "อัปเดตสต็อกสินค้าเรียบร้อยแล้ว",
+		"data":    product,
+	})
+}
+

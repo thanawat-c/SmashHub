@@ -101,6 +101,8 @@ func main() {
 			admin.PATCH("/bookings/:id/manual-approve", adminHandler.ManualApprove)
 			admin.POST("/bookings/:id/add-items", adminHandler.AddItems)
 			admin.PATCH("/bookings/:id/check-in", adminHandler.UpdateCheckIn)
+			admin.PATCH("/courts/:id", adminHandler.UpdateCourt)
+			admin.POST("/products/:id/restock", adminHandler.RestockProduct)
 			admin.POST("/cron/trigger", adminHandler.TriggerCron)
 		}
 	}
