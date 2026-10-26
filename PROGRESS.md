@@ -101,3 +101,7 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 10.2 (`dde86d7`)**: Backend Auth APIs (`POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/demo-login`, `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`) with bcrypt password hashing and token generation.
   - **Task 10.3 (`4215866`)**: Frontend Pinia `authStore.js` with session persistence, role computation, and booking store integration.
   - **Task 10.4 (`069bc7e`)**: `AuthModal.vue` component, App.vue navigation login/register button, logged-in user profile pill with dropdown logout, and Admin Dashboard access gate.
+- [x] **Phase 11: Customer Booking History & Order Retrieval** (Completed)
+  - **Task 11.1 (`4e9a3e5`)**: Backend API `GET /api/v1/bookings/my-bookings` with preloaded `User`, `Courts.Court`, `Items.Product`, and `PaymentSlip` relationships, supporting filter by `user_id`, `phone`, or `line_user_id`.
+  - **Task 11.2 (`5b6726d`)**: Customer Booking History Drawer (`MyBookingsDrawer.vue`) with status tabs (`ทั้งหมด`, `✅ ยืนยันแล้ว`, `⏱️ รอชำระเงิน`, `⚠️ รอตรวจสลิป`), 1-click booking number copy, items summary, 1-click E-Ticket viewer (`🎟️ เปิดบัตรเข้าสนาม`), and 1-click payment resume (`💳 แนบสลิป / ชำระเงิน`). Integrated in App navigation, user profile dropdown, and LIFF header.
+
