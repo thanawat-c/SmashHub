@@ -109,5 +109,13 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - Horizontal swipeable Court selector cards (`คอร์ท 1-6`) with real-time remaining hours badge and type indicator (`PVC` vs `VIP Acrylic`).
     - Clean vertical hourly timeline schedule with checkbox rows, clear Peak Hour indicators, and real-time status.
     - Revamped `LiffHeader.vue` dropdown popover into an authentic, crisp mobile account drawer, separating user profile from dev sandbox options.
+- [x] **Phase 13: Customer Booking Cancellation & Atomic Stock/Court Restoration** (Completed)
+  - **Task 13 (`a0b7aa7`)**:
+    - Backend: Added `POST /api/v1/bookings/:id/cancel` running inside an atomic DB transaction (`db.Transaction`). Updates status to `CANCELLED`, unlocks court slots (`is_slot_locked = false`), restores product stock counts with `UpdateColumn("stock_qty", gorm.Expr("stock_qty + ?", item.Qty))`, and broadcasts `BOOKING_CANCELLED` via SSE.
+    - Frontend: Integrated cancellation prompt and modal in `MyBookingsDrawer.vue` with real-time state sync.
+- [x] **Phase 14: Admin Court Maintenance & Mini-Store Restock Control** (Completed)
+  - **Task 14 (`f19d2dc`)**:
+    - Backend: Implemented `PATCH /api/v1/admin/courts/:id` for setting court status (`ACTIVE` vs `MAINTENANCE`) and rates, plus `POST /api/v1/admin/products/:id/restock` for inventory restock.
+    - Frontend: Added `Court & Stock Control` tab in `AdminDashboard.vue` with dedicated management component `AdminInventoryManagement.vue` allowing 1-click court maintenance toggle and quick restock buttons (`+5`, `+10`, `+24`).
 
 
