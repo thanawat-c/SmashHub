@@ -2,14 +2,17 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useBookingStore } from '@/stores/bookingStore'
 import AuthModal from '@/components/AuthModal.vue'
+import MyBookingsDrawer from '@/components/MyBookingsDrawer.vue'
 import {
-  LogIn, LogOut, User, ShieldCheck, ChevronDown, Check
+  LogIn, LogOut, User, ShieldCheck, ChevronDown, Check, ClipboardList
 } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const bookingStore = useBookingStore()
 
 const showUserMenu = ref(false)
 
@@ -19,6 +22,11 @@ function navigateToAdmin() {
     return
   }
   router.push('/admin')
+}
+
+function openCustomerBookings() {
+  showUserMenu.value = false
+  bookingStore.openMyBookings(authStore.user)
 }
 
 function handleLogout() {
@@ -75,6 +83,15 @@ function handleLogout() {
         </div>
 
         <button
+          @click="openCustomerBookings"
+          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1"
+          title="ดูประวัติการจองของฉัน"
+        >
+          <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
+          <span class="hidden md:inline">ประวัติการจอง</span>
+        </button>
+
+        <button
           @click="router.push('/demo')"
           :class="[
             'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-900 hover:bg-slate-100 hidden sm:inline-flex items-center space-x-1',
@@ -125,7 +142,7 @@ function handleLogout() {
           <!-- User Menu Dropdown -->
           <div
             v-if="showUserMenu"
-            class="absolute right-0 mt-1.5 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 text-xs z-50 animate-in fade-in"
+            class="absolute right-0 mt-1.5 w-60 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 text-xs z-50 animate-in fade-in"
           >
             <div class="px-3.5 py-2 border-b border-slate-100">
               <div class="font-bold text-slate-900 text-xs">{{ authStore.displayName }}</div>
@@ -143,6 +160,14 @@ function handleLogout() {
             </div>
 
             <div class="py-1">
+              <button
+                @click="openCustomerBookings"
+                class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2 font-medium"
+              >
+                <span>📋</span>
+                <span>ประวัติการจอง & ตั๋วของฉัน</span>
+              </button>
+
               <button
                 @click="showUserMenu = false; router.push('/liff')"
                 class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2"
@@ -180,5 +205,8 @@ function handleLogout() {
 
     <!-- Global Auth Modal -->
     <AuthModal />
+
+    <!-- Customer My Bookings Drawer -->
+    <MyBookingsDrawer />
   </div>
 </template>

@@ -98,6 +98,13 @@ function handleBack() {
           <!-- Auth Actions inside Dropdown -->
           <div class="p-2 border-b border-slate-100 space-y-1">
             <button
+              @click="showDropdown = false; bookingStore.openMyBookings(authStore.user || profileStore.currentProfile)"
+              class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 border border-slate-200"
+            >
+              <span>📋 ประวัติการจอง & ตั๋วของฉัน</span>
+            </button>
+
+            <button
               v-if="!authStore.isAuthenticated"
               @click="showDropdown = false; authStore.openAuthModal('login')"
               class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-2xs"

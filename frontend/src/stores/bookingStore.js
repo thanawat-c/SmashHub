@@ -231,6 +231,62 @@ export const useBookingStore = defineStore('booking', () => {
     }
   }
 
+  // Customer Booking History & Order Retrieval
+  const myBookings = ref([])
+  const isMyBookingsOpen = ref(false)
+  const isFetchingMyBookings = ref(false)
+
+  async function fetchMyBookings(userParams = null) {
+    isFetchingMyBookings.value = true
+    try {
+      const params = {}
+      if (userParams?.id) params.user_id = userParams.id
+      if (userParams?.phone) params.phone = userParams.phone
+      if (userParams?.lineUserId || userParams?.line_user_id) {
+        params.line_user_id = userParams.lineUserId || userParams.line_user_id
+      }
+      const res = await api.get('/bookings/my-bookings', { params })
+      myBookings.value = res.data.data || []
+    } catch (err) {
+      console.error('Error fetching my bookings:', err)
+    } finally {
+      isFetchingMyBookings.value = false
+    }
+  }
+
+  function openMyBookings(userParams = null) {
+    isMyBookingsOpen.value = true
+    fetchMyBookings(userParams)
+  }
+
+  function closeMyBookings() {
+    isMyBookingsOpen.value = false
+  }
+
+  function viewBookingTicket(booking) {
+    activeBooking.value = {
+      booking,
+      promptpay_qr: `00020101021129370016A000000677010111011300669876543215802TH5303764540${booking.net_total}5802TH6304`
+    }
+    if (booking.courts?.[0]?.play_date) {
+      selectedDate.value = booking.courts[0].play_date.split('T')[0]
+    }
+    currentStep.value = 4
+    isMyBookingsOpen.value = false
+  }
+
+  function resumeBookingPayment(booking) {
+    activeBooking.value = {
+      booking,
+      promptpay_qr: `00020101021129370016A000000677010111011300669876543215802TH5303764540${booking.net_total}5802TH6304`
+    }
+    if (booking.courts?.[0]?.play_date) {
+      selectedDate.value = booking.courts[0].play_date.split('T')[0]
+    }
+    currentStep.value = 3
+    isMyBookingsOpen.value = false
+  }
+
   return {
     selectedDate,
     courts,
@@ -257,6 +313,14 @@ export const useBookingStore = defineStore('booking', () => {
     resetSelection,
     submitBooking,
     ensureActiveBookingForDemo,
-    verifySlip
+    verifySlip,
+    myBookings,
+    isMyBookingsOpen,
+    isFetchingMyBookings,
+    fetchMyBookings,
+    openMyBookings,
+    closeMyBookings,
+    viewBookingTicket,
+    resumeBookingPayment
   }
 })
