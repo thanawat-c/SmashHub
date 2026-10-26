@@ -444,3 +444,38 @@ func (s *BookingService) AddItemsToBooking(bookingID uuid.UUID, items []BookingI
 
 	return &updatedBooking, nil
 }
+
+// GetMyBookings retrieves booking history for a specific customer
+func (s *BookingService) GetMyBookings(userID, phone, lineUserID string) ([]models.Booking, error) {
+	query := s.db.Model(&models.Booking{}).
+		Preload("User").
+		Preload("Courts.Court").
+		Preload("Items.Product").
+		Preload("PaymentSlip")
+
+	hasFilter := false
+	if userID != "" {
+		if uid, err := uuid.Parse(userID); err == nil {
+			query = query.Where("bookings.user_id = ?", uid)
+			hasFilter = true
+		}
+	}
+
+	if !hasFilter && phone != "" {
+		query = query.Joins("JOIN users ON users.id = bookings.user_id").
+			Where("users.phone = ?", phone)
+		hasFilter = true
+	} else if !hasFilter && lineUserID != "" {
+		query = query.Joins("JOIN users ON users.id = bookings.user_id").
+			Where("users.line_user_id = ?", lineUserID)
+		hasFilter = true
+	}
+
+	var bookings []models.Booking
+	if err := query.Order("bookings.created_at DESC").Limit(50).Find(&bookings).Error; err != nil {
+		return nil, fmt.Errorf("failed to fetch user bookings: %w", err)
+	}
+
+	return bookings, nil
+}
+

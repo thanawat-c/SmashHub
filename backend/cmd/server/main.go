@@ -89,6 +89,7 @@ func main() {
 
 		// Booking & Slip Verification
 		api.POST("/bookings", bookingHandler.CreateBooking)
+		api.GET("/bookings/my-bookings", bookingHandler.GetMyBookings)
 		api.GET("/bookings/:id", bookingHandler.GetBookingByID)
 		api.POST("/bookings/:id/verify-slip", bookingHandler.VerifySlip)
 

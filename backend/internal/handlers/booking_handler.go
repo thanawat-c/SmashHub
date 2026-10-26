@@ -130,3 +130,25 @@ func (h *BookingHandler) VerifySlip(c *gin.Context) {
 		"data":    result,
 	})
 }
+
+// GetMyBookings handles GET /api/v1/bookings/my-bookings
+func (h *BookingHandler) GetMyBookings(c *gin.Context) {
+	userID := c.Query("user_id")
+	if userID == "" {
+		userID = c.GetHeader("X-User-Id")
+	}
+	phone := c.Query("phone")
+	lineUserID := c.Query("line_user_id")
+
+	bookings, err := h.bookingService.GetMyBookings(userID, phone, lineUserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":  bookings,
+		"count": len(bookings),
+	})
+}
+
