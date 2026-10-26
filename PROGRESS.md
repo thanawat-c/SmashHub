@@ -104,4 +104,10 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
 - [x] **Phase 11: Customer Booking History & Order Retrieval** (Completed)
   - **Task 11.1 (`4e9a3e5`)**: Backend API `GET /api/v1/bookings/my-bookings` with preloaded `User`, `Courts.Court`, `Items.Product`, and `PaymentSlip` relationships, supporting filter by `user_id`, `phone`, or `line_user_id`.
   - **Task 11.2 (`5b6726d`)**: Customer Booking History Drawer (`MyBookingsDrawer.vue`) with status tabs (`ทั้งหมด`, `✅ ยืนยันแล้ว`, `⏱️ รอชำระเงิน`, `⚠️ รอตรวจสลิป`), 1-click booking number copy, items summary, 1-click E-Ticket viewer (`🎟️ เปิดบัตรเข้าสนาม`), and 1-click payment resume (`💳 แนบสลิป / ชำระเงิน`). Integrated in App navigation, user profile dropdown, and LIFF header.
+- [x] **Phase 12: Playtomic / MATCHi Benchmark UI Overhaul** (Completed)
+  - **Task 12 (`cd9cb6b`)**: Redesigned `CourtMatrixStep.vue` from repetitive floating hour cards into a modern **Court-First Club Timeline Schedule** (Playtomic / MATCHi standard):
+    - Horizontal swipeable Court selector cards (`คอร์ท 1-6`) with real-time remaining hours badge and type indicator (`PVC` vs `VIP Acrylic`).
+    - Clean vertical hourly timeline schedule with checkbox rows, clear Peak Hour indicators, and real-time status.
+    - Revamped `LiffHeader.vue` dropdown popover into an authentic, crisp mobile account drawer, separating user profile from dev sandbox options.
+
 
