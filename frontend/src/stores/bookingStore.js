@@ -287,6 +287,26 @@ export const useBookingStore = defineStore('booking', () => {
     isMyBookingsOpen.value = false
   }
 
+  async function cancelBooking(bookingId, reason = 'ลูกค้ายกเลิกการจอง') {
+    try {
+      const res = await api.post(`/bookings/${bookingId}/cancel`, { reason })
+      // Update in local myBookings list
+      const idx = myBookings.value.findIndex(b => b.id === bookingId)
+      if (idx !== -1) {
+        myBookings.value[idx].status = 'CANCELLED'
+      }
+      // If active booking was cancelled, reset
+      if (activeBooking.value?.booking?.id === bookingId) {
+        activeBooking.value.booking.status = 'CANCELLED'
+      }
+      await fetchAvailability()
+      return { success: true, data: res.data.data }
+    } catch (err) {
+      const msg = err.response?.data?.error || 'ไม่สามารถยกเลิกการจองได้'
+      return { success: false, error: msg }
+    }
+  }
+
   return {
     selectedDate,
     courts,
@@ -321,6 +341,7 @@ export const useBookingStore = defineStore('booking', () => {
     openMyBookings,
     closeMyBookings,
     viewBookingTicket,
-    resumeBookingPayment
+    resumeBookingPayment,
+    cancelBooking
   }
 })

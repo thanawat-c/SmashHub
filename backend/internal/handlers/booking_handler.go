@@ -152,3 +152,28 @@ func (h *BookingHandler) GetMyBookings(c *gin.Context) {
 	})
 }
 
+// CancelBooking handles POST /api/v1/bookings/:id/cancel
+func (h *BookingHandler) CancelBooking(c *gin.Context) {
+	bookingID := c.Param("id")
+
+	var req struct {
+		Reason string `json:"reason"`
+	}
+	_ = c.ShouldBindJSON(&req)
+	if req.Reason == "" {
+		req.Reason = "ยกเลิกโดยผู้ใช้งาน"
+	}
+
+	cancelledBooking, err := h.bookingService.CancelBooking(bookingID, req.Reason)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ยกเลิกการจองและคืนสนามเรียบร้อยแล้ว",
+		"data":    cancelledBooking,
+	})
+}
+
+

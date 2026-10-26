@@ -50,6 +50,24 @@ function formatPlayDate(dStr) {
     year: 'numeric'
   })
 }
+
+const isCancelling = ref(false)
+const cancelConfirmBooking = ref(null)
+const showCancelDialog = ref(false)
+
+function promptCancel(booking) {
+  cancelConfirmBooking.value = booking
+  showCancelDialog.value = true
+}
+
+async function handleConfirmCancel() {
+  if (!cancelConfirmBooking.value) return
+  isCancelling.value = true
+  await bookingStore.cancelBooking(cancelConfirmBooking.value.id, 'ลูกค้ายกเลิกผ่านหน้าประวัติการจอง')
+  isCancelling.value = false
+  showCancelDialog.value = false
+  cancelConfirmBooking.value = null
+}
 </script>
 
 <template>
@@ -240,46 +258,100 @@ function formatPlayDate(dStr) {
             </div>
 
             <!-- Contextual Action Buttons -->
-            <div>
+            <div class="flex items-center space-x-1.5">
+              <!-- Cancel Booking Button (for PENDING_PAYMENT, CONFIRMED, or MANUAL_REVIEW) -->
+              <button
+                v-if="['PENDING_PAYMENT', 'CONFIRMED', 'MANUAL_REVIEW'].includes(booking.status)"
+                @click="promptCancel(booking)"
+                class="px-2.5 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 rounded-xl text-xs font-semibold transition cursor-pointer"
+                title="ขอยกเลิกการจอง"
+              >
+                ยกเลิก
+              </button>
+
               <!-- 1. If CONFIRMED: Open E-Ticket / Gate QR Code -->
               <button
                 v-if="booking.status === 'CONFIRMED'"
                 @click="bookingStore.viewBookingTicket(booking)"
-                class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center space-x-1.5"
+                class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center space-x-1.5 cursor-pointer"
               >
                 <Ticket class="w-3.5 h-3.5" />
-                <span>เปิดบัตรเข้าสนาม (E-Ticket)</span>
+                <span>บัตรเข้าสนาม</span>
               </button>
 
               <!-- 2. If PENDING_PAYMENT: Resume Payment -->
               <button
                 v-else-if="booking.status === 'PENDING_PAYMENT'"
                 @click="bookingStore.resumeBookingPayment(booking)"
-                class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center space-x-1.5"
+                class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center space-x-1.5 cursor-pointer"
               >
                 <CreditCard class="w-3.5 h-3.5" />
-                <span>แนบสลิป / ชำระเงิน</span>
+                <span>แนบสลิป</span>
               </button>
 
-              <!-- 3. If MANUAL_REVIEW -->
+              <!-- 3. If CANCELLED -->
+              <span
+                v-else-if="booking.status === 'CANCELLED'"
+                class="text-[11px] text-rose-600 font-semibold"
+              >
+                ยกเลิกแล้ว
+              </span>
+
+              <!-- 4. If MANUAL_REVIEW -->
               <span
                 v-else-if="booking.status === 'MANUAL_REVIEW'"
                 class="text-[11px] text-purple-700 font-semibold"
               >
-                รอเจ้าหน้าที่อนุมัติ
+                รอตรวจสลิป
               </span>
 
-              <!-- 4. If EXPIRED -->
+              <!-- 5. If EXPIRED -->
               <span
                 v-else-if="booking.status === 'EXPIRED'"
                 class="text-[11px] text-slate-400"
               >
-                รายการหมดเวลา 10 นาที
+                หมดเวลา
               </span>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Cancellation Confirmation Dialog -->
+    <el-dialog
+      v-model="showCancelDialog"
+      title="ยืนยันการยกเลิกการจอง"
+      width="90%"
+      class="max-w-md rounded-2xl"
+      :show-close="false"
+      align-center
+    >
+      <div class="space-y-3 text-slate-700 text-xs">
+        <p>
+          คุณต้องการยกเลิกการจองหมายเลข <strong class="text-slate-900 font-mono">{{ cancelConfirmBooking?.booking_no }}</strong> ใช่หรือไม่?
+        </p>
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
+          ⚡ <strong>ระบบจะปลดล็อคคอร์ทสนาม</strong> และคืนสต็อกสินค้ามินิสโตร์กลับเข้าสู่ระบบทันทีแบบ Real-time
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button
+            @click="cancelConfirmBooking = null"
+            class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition cursor-pointer"
+          >
+            ย้อนกลับ
+          </button>
+          <button
+            @click="handleConfirmCancel"
+            :disabled="isCancelling"
+            class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+          >
+            {{ isCancelling ? 'กำลังยกเลิก...' : 'ยืนยันยกเลิกการจอง' }}
+          </button>
+        </div>
+      </template>
+    </el-dialog>
   </el-drawer>
 </template>

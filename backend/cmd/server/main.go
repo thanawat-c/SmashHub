@@ -92,6 +92,7 @@ func main() {
 		api.GET("/bookings/my-bookings", bookingHandler.GetMyBookings)
 		api.GET("/bookings/:id", bookingHandler.GetBookingByID)
 		api.POST("/bookings/:id/verify-slip", bookingHandler.VerifySlip)
+		api.POST("/bookings/:id/cancel", bookingHandler.CancelBooking)
 
 		// Admin & POS Operations
 		admin := api.Group("/admin")

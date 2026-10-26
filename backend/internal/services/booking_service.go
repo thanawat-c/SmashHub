@@ -479,3 +479,67 @@ func (s *BookingService) GetMyBookings(userID, phone, lineUserID string) ([]mode
 	return bookings, nil
 }
 
+// CancelBooking cancels a booking, unlocks court slots, and restores product inventory
+func (s *BookingService) CancelBooking(bookingID string, reason string) (*models.Booking, error) {
+	uid, err := uuid.Parse(bookingID)
+	if err != nil {
+		return nil, fmt.Errorf("รหัสการจองไม่ถูกต้อง")
+	}
+
+	var cancelledBooking models.Booking
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		var booking models.Booking
+		if err := tx.Preload("Courts").Preload("Items").First(&booking, "id = ?", uid).Error; err != nil {
+			return fmt.Errorf("ไม่พบข้อมูลการจอง: %w", err)
+		}
+
+		if booking.Status == models.BookingStatusCancelled {
+			return fmt.Errorf("รายการจองนี้ถูกยกเลิกไปแล้ว")
+		}
+		if booking.Status == models.BookingStatusExpired {
+			return fmt.Errorf("รายการจองนี้หมดเวลาไปแล้ว ไม่สามารถยกเลิกได้")
+		}
+
+		// 1. Update Booking Status to CANCELLED
+		booking.Status = models.BookingStatusCancelled
+		if err := tx.Save(&booking).Error; err != nil {
+			return fmt.Errorf("ไม่สามารถอัปเดตสถานะการจอง: %w", err)
+		}
+
+		// 2. Unlock court slots (is_slot_locked = FALSE)
+		if err := tx.Model(&models.BookingCourt{}).
+			Where("booking_id = ?", booking.ID).
+			Update("is_slot_locked", false).Error; err != nil {
+			return fmt.Errorf("ไม่สามารถปลดล็อคสนามได้: %w", err)
+		}
+
+		// 3. Restore inventory stock for each item
+		for _, item := range booking.Items {
+			if err := tx.Model(&models.Product{}).
+				Where("id = ?", item.ProductID).
+				UpdateColumn("stock_qty", gorm.Expr("stock_qty + ?", item.Qty)).Error; err != nil {
+				return fmt.Errorf("ไม่สามารถคืนสต็อกสินค้าได้: %w", err)
+			}
+		}
+
+		// Reload with relations
+		tx.Preload("User").Preload("Courts.Court").Preload("Items.Product").Preload("PaymentSlip").First(&cancelledBooking, "id = ?", booking.ID)
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Broadcast real-time event to Admin and Demo viewers
+	Hub.Broadcast("BOOKING_CANCELLED", map[string]interface{}{
+		"booking_id": cancelledBooking.ID,
+		"booking_no": cancelledBooking.BookingNo,
+		"reason":     reason,
+	})
+
+	return &cancelledBooking, nil
+}
+
+
