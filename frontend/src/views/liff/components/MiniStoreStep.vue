@@ -2,10 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useBookingStore } from '@/stores/bookingStore'
 import { useLineProfileStore } from '@/stores/lineProfile'
+import { useAuthStore } from '@/stores/authStore'
 import { ShoppingBag, ChevronLeft, ChevronRight, Plus, Minus, AlertCircle, Sparkles } from 'lucide-vue-next'
 
 const bookingStore = useBookingStore()
 const profileStore = useLineProfileStore()
+const authStore = useAuthStore()
 
 const activeCategory = ref('ALL') // ALL, SHUTTLECOCK, DRINK, RENTAL
 
@@ -26,7 +28,8 @@ const categories = [
 ]
 
 async function onProceedToPayment() {
-  await bookingStore.submitBooking(profileStore.currentProfile)
+  const customer = authStore.user || profileStore.currentProfile
+  await bookingStore.submitBooking(customer)
 }
 </script>
 

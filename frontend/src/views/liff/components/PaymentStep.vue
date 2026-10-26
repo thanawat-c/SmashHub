@@ -104,6 +104,51 @@ const showTesterPanel = ref(false)
       </div>
     </div>
 
+    <!-- Booking Summary & Item Breakdown Card -->
+    <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs space-y-2.5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+        <span class="text-xs font-bold text-slate-900">สรุปรายการคำสั่งซื้อ (Order Summary)</span>
+        <span class="text-[10px] font-mono text-slate-400">วันที่เล่น: {{ bookingStore.selectedDate }}</span>
+      </div>
+
+      <!-- Court Slots List -->
+      <div class="space-y-1.5 text-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">สนามแบดมินตัน</div>
+        <div
+          v-for="court in bookingStore.activeBooking?.booking?.courts || bookingStore.selectedSlots"
+          :key="court.id || (court.courtId + '-' + court.startHour)"
+          class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100"
+        >
+          <div class="flex items-center space-x-1.5">
+            <span class="font-extrabold text-slate-900">คอร์ท {{ court.court?.court_number || court.courtNumber }}</span>
+            <span class="text-[10px] text-slate-500 font-mono">({{ court.start_hour || court.startHour }}:00 - {{ (court.start_hour || court.startHour) + 1 }}:00 น.)</span>
+          </div>
+          <span class="font-bold font-mono text-slate-900">฿{{ court.hourly_rate || court.rate || 150 }}</span>
+        </div>
+      </div>
+
+      <!-- Mini-Store Items if any -->
+      <div v-if="(bookingStore.activeBooking?.booking?.items && bookingStore.activeBooking.booking.items.length > 0) || bookingStore.cartItemsList.length > 0" class="space-y-1.5 text-xs pt-1 border-t border-slate-100">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">อุปกรณ์ & เครื่องดื่ม</div>
+        <div
+          v-for="item in (bookingStore.activeBooking?.booking?.items || bookingStore.cartItemsList)"
+          :key="item.id || item.product?.id"
+          class="flex items-center justify-between text-slate-700"
+        >
+          <span>{{ item.product?.name }} x{{ item.qty }}</span>
+          <span class="font-bold font-mono text-slate-900">฿{{ item.subtotal || (item.product?.price * item.qty) }}</span>
+        </div>
+      </div>
+
+      <!-- Totals Footer -->
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+        <span class="text-slate-500">ยอดรวมทั้งหมด</span>
+        <span class="text-sm font-black font-mono text-emerald-700">
+          ฿{{ Number(bookingStore.activeBooking?.booking?.net_total || bookingStore.netTotal).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </span>
+      </div>
+    </div>
+
     <!-- Official Thai QR Payment Standard Card -->
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
       <!-- Thai QR Payment Blue Bar -->
