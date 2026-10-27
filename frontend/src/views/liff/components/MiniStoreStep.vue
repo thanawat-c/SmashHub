@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useBookingStore } from '@/stores/bookingStore'
 import { useLineProfileStore } from '@/stores/lineProfile'
 import { useAuthStore } from '@/stores/authStore'
-import { ShoppingBag, ChevronLeft, ChevronRight, Plus, Minus, AlertCircle, Sparkles } from 'lucide-vue-next'
+import { ShoppingBag, ChevronLeft, ChevronRight, Plus, Minus, AlertCircle } from 'lucide-vue-next'
 
 const bookingStore = useBookingStore()
 const profileStore = useLineProfileStore()
@@ -21,10 +21,10 @@ const filteredProducts = computed(() => {
 })
 
 const categories = [
-  { id: 'ALL', label: 'ทั้งหมด' },
-  { id: 'SHUTTLECOCK', label: '🏸 ลูกแบด' },
-  { id: 'DRINK', label: '🥤 เครื่องดื่ม' },
-  { id: 'RENTAL', label: '🎾 ไม้เช่า & กริป' }
+  { id: 'ALL', label: 'All Items' },
+  { id: 'SHUTTLECOCK', label: 'Shuttlecocks' },
+  { id: 'DRINK', label: 'Beverages' },
+  { id: 'RENTAL', label: 'Rackets & Grips' }
 ]
 
 async function onProceedToPayment() {
@@ -41,12 +41,12 @@ async function onProceedToPayment() {
         <div>
           <h2 class="text-xs font-extrabold text-slate-900 flex items-center space-x-1.5">
             <ShoppingBag class="w-3.5 h-3.5 text-emerald-600" />
-            <span>มินิสโตร์ & อุปกรณ์</span>
+            <span>Pro Shop & Add-ons</span>
           </h2>
-          <p class="text-[10px] text-slate-400">สั่งพร้อมคอร์ท รับสินค้าทันทีที่หน้าเคาน์เตอร์</p>
+          <p class="text-[10px] text-slate-400">Pre-order items to collect at the counter upon check-in</p>
         </div>
         <div v-if="bookingStore.totalCartCount > 0" class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded-full font-mono">
-          {{ bookingStore.totalCartCount }} ชิ้น
+          {{ bookingStore.totalCartCount }} item(s)
         </div>
       </div>
 
@@ -92,7 +92,7 @@ async function onProceedToPayment() {
             v-if="product.stock_qty <= 5 && product.stock_qty > 0"
             class="absolute bottom-0 inset-x-0 bg-rose-600 text-white text-[8px] font-bold text-center py-0.2"
           >
-            เหลือ {{ product.stock_qty }}
+            Only {{ product.stock_qty }} left
           </div>
         </div>
 
@@ -106,9 +106,9 @@ async function onProceedToPayment() {
                 product.category === 'DRINK' ? 'bg-blue-100 text-blue-900' : 'bg-purple-100 text-purple-900'
               ]"
             >
-              {{ product.category === 'SHUTTLECOCK' ? 'ลูกแบด' : product.category === 'DRINK' ? 'เครื่องดื่ม' : 'อุปกรณ์' }}
+              {{ product.category === 'SHUTTLECOCK' ? 'Shuttlecock' : product.category === 'DRINK' ? 'Beverage' : 'Equipment' }}
             </span>
-            <span class="text-[9px] text-slate-400 font-mono">คงเหลือ {{ product.stock_qty }} ชิ้น</span>
+            <span class="text-[9px] text-slate-400 font-mono">Stock: {{ product.stock_qty }}</span>
           </div>
 
           <h3 class="text-xs font-bold text-slate-900 truncate leading-snug">{{ product.name }}</h3>
@@ -153,12 +153,12 @@ async function onProceedToPayment() {
       <div class="bg-white/95 backdrop-blur-md text-slate-900 p-3 rounded-2xl shadow-lg border border-slate-200/90">
         <div class="flex items-center justify-between text-xs mb-2 pb-2 border-b border-slate-100">
           <div class="space-x-2 text-[10px] text-slate-500">
-            <span>คอร์ท: <strong class="text-slate-900 font-mono">฿{{ bookingStore.courtTotal.toLocaleString() }}</strong></span>
+            <span>Courts: <strong class="text-slate-900 font-mono">฿{{ bookingStore.courtTotal.toLocaleString() }}</strong></span>
             <span>•</span>
-            <span>สินค้า: <strong class="text-slate-900 font-mono">฿{{ bookingStore.itemTotal.toLocaleString() }}</strong></span>
+            <span>Add-ons: <strong class="text-slate-900 font-mono">฿{{ bookingStore.itemTotal.toLocaleString() }}</strong></span>
           </div>
           <div class="text-right">
-            <span class="text-[10px] text-slate-500 mr-1">ยอดสุทธิ:</span>
+            <span class="text-[10px] text-slate-500 mr-1">Total:</span>
             <span class="text-sm font-black text-emerald-700 font-mono">฿{{ bookingStore.netTotal.toLocaleString() }}</span>
           </div>
         </div>
@@ -169,7 +169,7 @@ async function onProceedToPayment() {
             class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition flex items-center space-x-1"
           >
             <ChevronLeft class="w-3.5 h-3.5" />
-            <span>คอร์ท</span>
+            <span>Courts</span>
           </button>
 
           <button
@@ -178,7 +178,7 @@ async function onProceedToPayment() {
             class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50"
           >
             <span v-if="bookingStore.isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            <span v-else>ยืนยันและไปชำระเงิน (฿{{ bookingStore.netTotal.toLocaleString() }})</span>
+            <span v-else>Proceed to Payment (฿{{ bookingStore.netTotal.toLocaleString() }})</span>
             <ChevronRight v-if="!bookingStore.isSubmitting" class="w-4 h-4" />
           </button>
         </div>
