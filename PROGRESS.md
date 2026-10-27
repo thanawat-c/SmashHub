@@ -117,5 +117,12 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 14 (`f19d2dc`)**:
     - Backend: Implemented `PATCH /api/v1/admin/courts/:id` for setting court status (`ACTIVE` vs `MAINTENANCE`) and rates, plus `POST /api/v1/admin/products/:id/restock` for inventory restock.
     - Frontend: Added `Court & Stock Control` tab in `AdminDashboard.vue` with dedicated management component `AdminInventoryManagement.vue` allowing 1-click court maintenance toggle and quick restock buttons (`+5`, `+10`, `+24`).
+- [x] **Phase 15: Full System English Internationalization & AI Icon/Emoji Elimination** (Completed)
+  - **Task 15.1 (`0694005`)**: Translated Navbar, Header, and Court Selection step (`CourtMatrixStep.vue`) to English, replaced racquet emojis with Lucide SVG icons and clean `SH` brand badges.
+  - **Task 15.2 (`2b85271`)**: Translated MiniStore, Payment, E-Ticket, MyBookingsDrawer, and AuthModal to standard sports booking English terminology.
+  - **Task 15.3 (`57fad47`)**: Translated Admin Dashboard, POS modal, Court Board, Order Audit table, Slip Audit drawer, Printable Tax Invoice/Receipt, and Demo split-screen view to professional English.
+  - **Task 15.4 (`c27b465`)**: Completely eliminated all remaining Thai strings and emojis across all Pinia stores (`lineProfile.js`, `adminStore.js`, `authStore.js`), vue-router meta titles, tooltips, and test verification buttons.
+  - **Task 15.5 (`69ea72e`)**: Fully translated backend API handlers (`admin_handler.go`, `auth_handler.go`, `booking_handler.go`), services (`slip_service.go`, `booking_service.go`, `admin_service.go`, `auth_service.go`), and database seed data (`002_seed_data.sql`) to English.
+
 
 
