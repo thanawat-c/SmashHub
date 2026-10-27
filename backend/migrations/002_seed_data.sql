@@ -18,7 +18,7 @@ INSERT INTO products (sku, name, category, price, stock_qty, image_url, is_activ
 ('SHUTTLE-RSL-SILVER-TUBE', 'RSL Silver Shuttlecocks (Tube of 12)', 'SHUTTLECOCK', 850.00, 25, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
 ('SHUTTLE-RSL-SILVER-PIECE', 'RSL Silver Shuttlecock (Single Piece)', 'SHUTTLECOCK', 75.00, 60, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
 ('SHUTTLE-VICTOR-MASTER1', 'Victor Master No.1 Shuttlecocks (Tube of 12)', 'SHUTTLECOCK', 990.00, 15, 'https://images.unsplash.com/photo-1613918108466-292b78a8ef95?w=400', TRUE),
-('DRINK-SINGHA-WATER', 'Singha Drinking Water 600ml (Chilled)', 'DRINK', 15.00, 120, 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=400', TRUE),
+('DRINK-SINGHA-WATER', 'Singha Drinking Water 600ml (Chilled)', 'DRINK', 15.00, 120, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400', TRUE),
 ('DRINK-POCARI-SWEAT', 'Pocari Sweat Electrolyte Drink 500ml', 'DRINK', 30.00, 80, 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', TRUE),
 ('DRINK-MINERE-WATER', 'Minere Natural Mineral Water 500ml', 'DRINK', 20.00, 50, 'https://images.unsplash.com/photo-1559839914-17aae19cec71?w=400', TRUE),
 ('RENTAL-RACKET-ASTROX', 'Yonex Astrox 88D Play Racket Rental', 'RENTAL', 80.00, 10, 'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=400', TRUE),
