@@ -123,6 +123,13 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 15.3 (`57fad47`)**: Translated Admin Dashboard, POS modal, Court Board, Order Audit table, Slip Audit drawer, Printable Tax Invoice/Receipt, and Demo split-screen view to professional English.
   - **Task 15.4 (`c27b465`)**: Completely eliminated all remaining Thai strings and emojis across all Pinia stores (`lineProfile.js`, `adminStore.js`, `authStore.js`), vue-router meta titles, tooltips, and test verification buttons.
   - **Task 15.5 (`69ea72e`)**: Fully translated backend API handlers (`admin_handler.go`, `auth_handler.go`, `booking_handler.go`), services (`slip_service.go`, `booking_service.go`, `admin_service.go`, `auth_service.go`), and database seed data (`002_seed_data.sql`) to English.
+- [x] **Phase 16: Mini-Store & Order Selection UX Overhaul** (Completed)
+  - **Task 16 (`4c667c6`)**:
+    - **Reserved Courts Summary Banner**: Added sticky overview card in Step 2 displaying booked court(s), date, hours breakdown, duration, subtotal, and 1-click "Change" link back to Step 1.
+    - **Broken Image Elimination & Vector Fallback**: Replaced broken 404 Unsplash URL with verified photo and implemented fail-safe `@error="handleImageError"` rendering clean Lucide SVG category graphics instead of broken image icons.
+    - **Active Cart Card Highlighting**: When an item has `qty > 0`, card highlights with emerald border and ring (`border-emerald-500 ring-1 ring-emerald-500/30 bg-emerald-50/15`).
+    - **Interactive Bottom Sheet ("Your Selection Overview")**: Tapping cart badge or total opens full itemized drawer showing courts breakdown, add-on products with live stepper, and transparent price calculation.
+    - **Database Reseed**: Updated active database with 100% English titles and verified CDN image URLs.
 
 
 
