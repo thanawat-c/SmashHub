@@ -6,26 +6,26 @@ export const useLineProfileStore = defineStore('lineProfile', () => {
     {
       id: 'b0000000-0000-0000-0000-000000000001',
       lineUserId: 'U_CUSTOMER_KAN',
-      displayName: 'กานต์ ธนบดี',
+      displayName: 'Kan Thanabodee',
       phone: '089-111-2233',
       pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=kan',
-      statusMessage: 'ตีแบดทุกวันเสาร์ 🏸'
+      statusMessage: 'Badminton training every Saturday'
     },
     {
       id: 'b0000000-0000-0000-0000-000000000002',
       lineUserId: 'U_CUSTOMER_NUT',
-      displayName: 'ณัฐพงษ์ วงศ์วิวัฒน์',
+      displayName: 'Nuttapong Wongwiwat',
       phone: '086-444-5566',
       pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nuttapong',
-      statusMessage: 'มือใหม่หัดตบ smash power'
+      statusMessage: 'Intermediate player - Smash power'
     },
     {
       id: 'b0000000-0000-0000-0000-000000000003',
       lineUserId: 'U_CUSTOMER_TNP',
-      displayName: 'ธนาภา สินสมบูรณ์',
+      displayName: 'Thanapa Sinsomboon',
       phone: '082-777-8899',
       pictureUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=thanapa',
-      statusMessage: 'หาเพื่อนก๊วนแบดมินตัน'
+      statusMessage: 'Looking for badminton doubles matches'
     }
   ]
 

@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Computed Getters
   const isAuthenticated = computed(() => Boolean(user.value))
   const isAdmin = computed(() => user.value?.role === 'ADMIN')
-  const displayName = computed(() => user.value?.display_name || 'ผู้เยี่ยมชม')
+  const displayName = computed(() => user.value?.display_name || 'Guest')
   const avatar = computed(() => {
     return user.value?.picture_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.value?.phone || 'smashhub'}`
   })
@@ -57,10 +57,10 @@ export const useAuthStore = defineStore('auth', () => {
       })
       setSession(res.data.user, res.data.token)
       isAuthModalOpen.value = false
-      ElMessage.success(`สมัครสมาชิกสำเร็จ! ยินดีต้อนรับคุณ ${res.data.user.display_name}`)
+      ElMessage.success(`Registration successful! Welcome, ${res.data.user.display_name}`)
       return true
     } catch (err) {
-      errorMessage.value = err.response?.data?.error || 'เกิดข้อผิดพลาดในการลงทะเบียน'
+      errorMessage.value = err.response?.data?.error || 'Registration failed. Please check your details.'
       ElMessage.error(errorMessage.value)
       return false
     } finally {
@@ -79,10 +79,10 @@ export const useAuthStore = defineStore('auth', () => {
       })
       setSession(res.data.user, res.data.token)
       isAuthModalOpen.value = false
-      ElMessage.success(`เข้าสู่ระบบสำเร็จ! สวัสดีคุณ ${res.data.user.display_name}`)
+      ElMessage.success(`Login successful! Welcome back, ${res.data.user.display_name}`)
       return true
     } catch (err) {
-      errorMessage.value = err.response?.data?.error || 'เข้าสู่ระบบไม่สำเร็จ โปรดตรวจสอบข้อมูล'
+      errorMessage.value = err.response?.data?.error || 'Invalid username or password'
       ElMessage.error(errorMessage.value)
       return false
     } finally {
@@ -98,10 +98,10 @@ export const useAuthStore = defineStore('auth', () => {
       const res = await api.post('/auth/demo-login', { role })
       setSession(res.data.user, res.data.token)
       isAuthModalOpen.value = false
-      ElMessage.success(`เข้าสู่ระบบในโหมดจำลอง (${role}): ${res.data.user.display_name}`)
+      ElMessage.success(`Switched session to ${role}: ${res.data.user.display_name}`)
       return true
     } catch (err) {
-      errorMessage.value = err.response?.data?.error || 'เข้าสู่ระบบโหมดจำลองไม่สำเร็จ'
+      errorMessage.value = err.response?.data?.error || 'Demo login failed'
       ElMessage.error(errorMessage.value)
       return false
     } finally {
@@ -117,7 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Ignore network errors on logout
     } finally {
       clearSession()
-      ElMessage.info('ออกจากระบบเรียบร้อย')
+      ElMessage.info('Logged out successfully')
     }
   }
 

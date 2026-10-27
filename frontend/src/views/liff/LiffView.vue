@@ -43,7 +43,7 @@ function goToStep(stepNum) {
                 'flex items-center space-x-1.5 select-none transition',
                 step.num < bookingStore.currentStep ? 'cursor-pointer hover:opacity-80 active:scale-95' : ''
               ]"
-              :title="step.num < bookingStore.currentStep ? `ย้อนกลับไป: ${step.label}` : ''"
+              :title="step.num < bookingStore.currentStep ? `Return to: ${step.label}` : ''"
             >
               <div
                 :class="[

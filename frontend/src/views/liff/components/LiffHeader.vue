@@ -50,7 +50,7 @@ function handleBack() {
           v-if="bookingStore.currentStep > 1"
           @click="handleBack"
           class="text-slate-700 hover:text-slate-900 transition p-1.5 rounded-xl hover:bg-slate-100 active:bg-slate-200 cursor-pointer flex items-center justify-center -ml-1"
-          title="ย้อนกลับขั้นตอนก่อนหน้า"
+          title="Previous Step"
         >
           <ChevronLeft class="w-4 h-4 stroke-[2.5]" />
         </button>

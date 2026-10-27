@@ -278,7 +278,10 @@ const showTesterPanel = ref(false)
             :disabled="bookingStore.isSubmitting"
             class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-medium transition text-left cursor-pointer"
           >
-            <div class="font-bold">✓ Valid Slip</div>
+            <div class="flex items-center space-x-1 font-bold">
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Valid Slip</span>
+            </div>
             <div class="text-[9px] text-emerald-600 mt-0.5">Verified -> Booking Confirmed</div>
           </button>
 
@@ -287,7 +290,10 @@ const showTesterPanel = ref(false)
             :disabled="bookingStore.isSubmitting"
             class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl font-medium transition text-left cursor-pointer"
           >
-            <div class="font-bold">✗ Duplicate Slip</div>
+            <div class="flex items-center space-x-1 font-bold">
+              <XCircle class="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span>Duplicate Slip</span>
+            </div>
             <div class="text-[9px] text-rose-600 mt-0.5">Reused slip -> Rejected</div>
           </button>
 
@@ -296,7 +302,10 @@ const showTesterPanel = ref(false)
             :disabled="bookingStore.isSubmitting"
             class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl font-medium transition text-left cursor-pointer"
           >
-            <div class="font-bold">! Underpaid Slip</div>
+            <div class="flex items-center space-x-1 font-bold">
+              <AlertTriangle class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>Underpaid Slip</span>
+            </div>
             <div class="text-[9px] text-amber-600 mt-0.5">Amount mismatch -> Rejected</div>
           </button>
 
@@ -305,7 +314,10 @@ const showTesterPanel = ref(false)
             :disabled="bookingStore.isSubmitting"
             class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-xl font-medium transition text-left cursor-pointer"
           >
-            <div class="font-bold">⟳ Bank Timeout</div>
+            <div class="flex items-center space-x-1 font-bold">
+              <FileCheck2 class="w-3.5 h-3.5 text-purple-600 shrink-0" />
+              <span>Bank Timeout</span>
+            </div>
             <div class="text-[9px] text-purple-600 mt-0.5">Gateway down -> Manual Review</div>
           </button>
         </div>

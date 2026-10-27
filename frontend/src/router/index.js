@@ -12,13 +12,13 @@ const routes = [
     path: '/liff',
     name: 'liff',
     component: LiffView,
-    meta: { title: 'SmashHub - จองคอร์ทแบดมินตัน (LINE LIFF)' }
+    meta: { title: 'SmashHub - Badminton Court Booking (LINE LIFF)' }
   },
   {
     path: '/admin',
     name: 'admin',
     component: AdminDashboard,
-    meta: { title: 'SmashHub - ระบบจัดการหลังร้าน & POS' }
+    meta: { title: 'SmashHub - Backoffice & POS System' }
   },
   {
     path: '/demo',

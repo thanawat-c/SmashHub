@@ -50,8 +50,8 @@ export const useAdminStore = defineStore('admin', () => {
         note
       })
       ElNotification({
-        title: action === 'APPROVE' ? 'อนุมัติเรียบร้อย' : 'ปฏิเสธเรียบร้อย',
-        message: res.data.message,
+        title: action === 'APPROVE' ? 'Booking Approved' : 'Booking Rejected',
+        message: res.data.message || 'Operation completed successfully',
         type: action === 'APPROVE' ? 'success' : 'warning'
       })
       await fetchBookings()
@@ -61,8 +61,8 @@ export const useAdminStore = defineStore('admin', () => {
       return true
     } catch (err) {
       ElNotification({
-        title: 'เกิดข้อผิดพลาด',
-        message: err.response?.data?.error || 'ไม่สามารถดำเนินการได้',
+        title: 'Operation Failed',
+        message: err.response?.data?.error || 'Unable to complete action',
         type: 'error'
       })
       return false
@@ -73,16 +73,16 @@ export const useAdminStore = defineStore('admin', () => {
     try {
       const res = await api.patch(`/admin/bookings/${bookingId}/check-in`, { status })
       ElNotification({
-        title: 'อัปเดตสถานะสำเร็จ',
-        message: `เช็คอิน: ${status}`,
+        title: 'Check-in Updated',
+        message: `Status updated to: ${status}`,
         type: 'success'
       })
       await fetchBookings()
       return true
     } catch (err) {
       ElNotification({
-        title: 'เกิดข้อผิดพลาด',
-        message: err.response?.data?.error || 'ไม่สามารถอัปเดตการเช็คอินได้',
+        title: 'Update Failed',
+        message: err.response?.data?.error || 'Unable to update check-in status',
         type: 'error'
       })
       return false
@@ -93,8 +93,8 @@ export const useAdminStore = defineStore('admin', () => {
     try {
       const res = await api.post(`/admin/bookings/${bookingId}/add-items`, { items })
       ElNotification({
-        title: 'เพิ่มสินค้าสำเร็จ',
-        message: res.data.message,
+        title: 'Items Added',
+        message: res.data.message || 'Items successfully added to order',
         type: 'success'
       })
       await fetchBookings()
@@ -102,8 +102,8 @@ export const useAdminStore = defineStore('admin', () => {
       return true
     } catch (err) {
       ElNotification({
-        title: 'เกิดข้อผิดพลาด',
-        message: err.response?.data?.error || 'ไม่สามารถเพิ่มสินค้าได้',
+        title: 'POS Error',
+        message: err.response?.data?.error || 'Unable to add items to order',
         type: 'error'
       })
       return false
@@ -139,8 +139,8 @@ export const useAdminStore = defineStore('admin', () => {
     eventSource.addEventListener('BOOKING_CREATED', (e) => {
       const data = JSON.parse(e.data)
       ElNotification({
-        title: '🏸 มีการจองคอร์ทใหม่',
-        message: `รหัส ${data.booking_no} โดยคุณ ${data.customer} (ยอด ${data.net_total} บ.)`,
+        title: 'New Booking Created',
+        message: `Ref ${data.booking_no} by ${data.customer} (THB ${data.net_total})`,
         type: 'info'
       })
       fetchBookings()
@@ -149,8 +149,8 @@ export const useAdminStore = defineStore('admin', () => {
     eventSource.addEventListener('BOOKING_CONFIRMED', (e) => {
       const data = JSON.parse(e.data)
       ElNotification({
-        title: '✅ ชำระเงินสำเร็จแล้ว',
-        message: `รหัส ${data.booking_no} ได้รับการยืนยันแล้ว`,
+        title: 'Payment Confirmed',
+        message: `Ref ${data.booking_no} has been confirmed`,
         type: 'success'
       })
       fetchBookings()
@@ -159,8 +159,8 @@ export const useAdminStore = defineStore('admin', () => {
     eventSource.addEventListener('BOOKING_MANUAL_REVIEW', (e) => {
       const data = JSON.parse(e.data)
       ElNotification({
-        title: '⚠️ สลิปรอแอดมินตรวจสอบ',
-        message: `รหัส ${data.booking_no} ระบบตรวจสลิปขัดข้อง กรุณาตรวจสอบด้วยตนเอง`,
+        title: 'Slip Pending Audit',
+        message: `Ref ${data.booking_no} requires manual verification`,
         type: 'warning'
       })
       fetchBookings()
@@ -169,8 +169,8 @@ export const useAdminStore = defineStore('admin', () => {
     eventSource.addEventListener('BOOKING_EXPIRED', (e) => {
       const data = JSON.parse(e.data)
       ElNotification({
-        title: '⏱️ สล็อตคอร์ทหมดอายุ',
-        message: `รหัส ${data.booking_no} หมดเวลาชำระเงิน คืนสล็อตคอร์ทแล้ว`,
+        title: 'Booking Expired',
+        message: `Ref ${data.booking_no} timed out. Court slot released.`,
         type: 'info'
       })
       fetchBookings()
