@@ -32,13 +32,13 @@ func NewAdminHandler(
 func (h *AdminHandler) GetBookings(c *gin.Context) {
 	var filter services.AdminFilterParams
 	if err := c.ShouldBindQuery(&filter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "พารามิเตอร์การค้นหาไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query parameters"})
 		return
 	}
 
 	bookings, err := h.adminService.GetBookings(filter)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "เกิดข้อผิดพลาดในการดึงข้อมูล: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch bookings: " + err.Error()})
 		return
 	}
 
@@ -53,13 +53,13 @@ func (h *AdminHandler) ManualApprove(c *gin.Context) {
 	idParam := c.Param("id")
 	bookingID, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสการจองไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
 		return
 	}
 
 	var req services.ManualApproveRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ข้อมูลไม่ถูกต้อง (ต้องระบุ action เป็น APPROVE หรือ REJECT)"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload (action must be APPROVE or REJECT)"})
 		return
 	}
 
@@ -69,9 +69,9 @@ func (h *AdminHandler) ManualApprove(c *gin.Context) {
 		return
 	}
 
-	message := "อนุมัติการชำระเงินเรียบร้อยแล้ว"
+	message := "Booking payment successfully approved"
 	if req.Action == "REJECT" {
-		message = "ปฏิเสธสลิปและยกเลิกการจองเรียบร้อยแล้ว คืนสต็อกและปลดล็อคคอร์ทแล้ว"
+		message = "Slip rejected and booking cancelled. Court released and inventory restored."
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -85,7 +85,7 @@ func (h *AdminHandler) AddItems(c *gin.Context) {
 	idParam := c.Param("id")
 	bookingID, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสการจองไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
 		return
 	}
 
@@ -93,7 +93,7 @@ func (h *AdminHandler) AddItems(c *gin.Context) {
 		Items []services.BookingItemInput `json:"items" binding:"required,min=1"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ข้อมูลสินค้าไม่ถูกต้อง: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid items payload: " + err.Error()})
 		return
 	}
 
@@ -104,7 +104,7 @@ func (h *AdminHandler) AddItems(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "เพิ่มสินค้าลงในบิลและตัดสต็อกเรียบร้อยแล้ว",
+		"message": "Items successfully added and inventory deducted",
 		"data":    booking,
 	})
 }
@@ -114,7 +114,7 @@ func (h *AdminHandler) UpdateCheckIn(c *gin.Context) {
 	idParam := c.Param("id")
 	bookingID, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสการจองไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
 		return
 	}
 
@@ -122,7 +122,7 @@ func (h *AdminHandler) UpdateCheckIn(c *gin.Context) {
 		Status string `json:"status" binding:"required"` // WAITING, CHECKED_IN, COMPLETED
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณาระบุสถานะ (WAITING, CHECKED_IN, COMPLETED)"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide check-in status (WAITING, CHECKED_IN, COMPLETED)"})
 		return
 	}
 
@@ -133,7 +133,7 @@ func (h *AdminHandler) UpdateCheckIn(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "อัปเดตสถานะการเช็คอินเรียบร้อยแล้ว",
+		"message": "Check-in status updated successfully",
 		"data":    booking,
 	})
 }
@@ -147,7 +147,7 @@ func (h *AdminHandler) TriggerCron(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":       "รันระบบตรวจสอบการจองหมดอายุเรียบร้อยแล้ว",
+		"message":       "Expired bookings check completed successfully",
 		"expired_count": expiredCount,
 	})
 }
@@ -157,7 +157,7 @@ func (h *AdminHandler) UpdateCourt(c *gin.Context) {
 	idParam := c.Param("id")
 	var courtID uint
 	if _, err := fmt.Sscanf(idParam, "%d", &courtID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสสนามไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid court ID"})
 		return
 	}
 
@@ -175,7 +175,7 @@ func (h *AdminHandler) UpdateCourt(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "อัปเดตสถานะคอร์ทสนามเรียบร้อยแล้ว",
+		"message": "Court status updated successfully",
 		"data":    court,
 	})
 }
@@ -185,7 +185,7 @@ func (h *AdminHandler) RestockProduct(c *gin.Context) {
 	idParam := c.Param("id")
 	var productID uint
 	if _, err := fmt.Sscanf(idParam, "%d", &productID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสสินค้าไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
 		return
 	}
 
@@ -202,7 +202,7 @@ func (h *AdminHandler) RestockProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "อัปเดตสต็อกสินค้าเรียบร้อยแล้ว",
+		"message": "Inventory restocked successfully",
 		"data":    product,
 	})
 }

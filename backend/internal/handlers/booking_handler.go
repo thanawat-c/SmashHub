@@ -30,7 +30,7 @@ func NewBookingHandler(bookingService *services.BookingService, slipService *ser
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req services.CreateBookingRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ข้อมูลการจองไม่ถูกต้อง: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking payload: " + err.Error()})
 		return
 	}
 
@@ -39,8 +39,8 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 		if errors.Is(err, services.ErrCourtAlreadyBooked) {
 			// CRITICAL: Return 409 Conflict when partial unique index rejects overlapping slot
 			c.JSON(http.StatusConflict, gin.H{
-				"error":   "คอร์ทที่เลือกเพิ่งถูกจองไปเมื่อสักครู่",
-				"details": "มีผู้ใช้อื่นจองสล็อตเวลานี้ไปก่อนหน้า กรุณาเลือกช่วงเวลาหรือคอร์ทใหม่อีกครั้ง",
+				"error":   "The selected court was just booked by another user",
+				"details": "Another player has just reserved this time slot. Please choose another court or time.",
 			})
 			return
 		}
@@ -49,7 +49,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "สร้างการจองสำเร็จ กรุณาชำระเงินและแนบสลิปภายใน 10 นาที",
+		"message": "Booking created successfully. Please transfer and upload your payment slip within 10 minutes.",
 		"data":    result,
 	})
 }
@@ -59,7 +59,7 @@ func (h *BookingHandler) GetBookingByID(c *gin.Context) {
 	idParam := c.Param("id")
 	bookingID, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสการจองไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
 		return
 	}
 
@@ -69,7 +69,7 @@ func (h *BookingHandler) GetBookingByID(c *gin.Context) {
 		Preload("Items.Product").
 		Preload("PaymentSlip").
 		First(&booking, "id = ?", bookingID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่พบข้อมูลการจอง"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
 		return
 	}
 
@@ -79,7 +79,7 @@ func (h *BookingHandler) GetBookingByID(c *gin.Context) {
 		"data":            booking,
 		"promptpay_qr":    promptPayQR,
 		"promptpay_phone": "098-7-65432-1",
-		"promptpay_name":  "บจก. สแมชฮับ แบดมินตัน (SmashHub)",
+		"promptpay_name":  "SmashHub Badminton Arena Co., Ltd.",
 	})
 }
 
@@ -88,14 +88,14 @@ func (h *BookingHandler) VerifySlip(c *gin.Context) {
 	idParam := c.Param("id")
 	bookingID, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "รหัสการจองไม่ถูกต้อง"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
 		return
 	}
 
 	var req services.VerifySlipRequest
 	// Support both JSON body and multipart form (file upload / text)
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ข้อมูลสลิปไม่ถูกต้อง: " + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid slip payload: " + err.Error()})
 		return
 	}
 
@@ -161,7 +161,7 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	}
 	_ = c.ShouldBindJSON(&req)
 	if req.Reason == "" {
-		req.Reason = "ยกเลิกโดยผู้ใช้งาน"
+		req.Reason = "Cancelled by user"
 	}
 
 	cancelledBooking, err := h.bookingService.CancelBooking(bookingID, req.Reason)
@@ -171,7 +171,7 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "ยกเลิกการจองและคืนสนามเรียบร้อยแล้ว",
+		"message": "Booking cancelled and court slot released successfully",
 		"data":    cancelledBooking,
 	})
 }

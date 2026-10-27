@@ -6,37 +6,37 @@ TRUNCATE TABLE payment_slips, booking_items, booking_courts, bookings, products,
 
 -- 1. Seed Badminton Courts (6 Courts)
 INSERT INTO courts (court_number, name, court_type, normal_rate, peak_rate, status) VALUES
-(1, 'คอร์ท 1 (PVC มาตรฐาน)', 'PVC', 150.00, 220.00, 'ACTIVE'),
-(2, 'คอร์ท 2 (PVC มาตรฐาน)', 'PVC', 150.00, 220.00, 'ACTIVE'),
-(3, 'คอร์ท 3 (PVC มาตรฐาน)', 'PVC', 150.00, 220.00, 'ACTIVE'),
-(4, 'คอร์ท 4 (PVC มาตรฐาน)', 'PVC', 150.00, 220.00, 'ACTIVE'),
-(5, 'คอร์ท 5 (แข่งขัน พื้นยางสังเคราะห์ Acrylic VIP)', 'ACRYLIC', 180.00, 260.00, 'ACTIVE'),
-(6, 'คอร์ท 6 (แข่งขัน พื้นยางสังเคราะห์ Acrylic VIP)', 'ACRYLIC', 180.00, 260.00, 'ACTIVE');
+(1, 'Court 1 (Standard PVC Mat)', 'PVC', 150.00, 220.00, 'ACTIVE'),
+(2, 'Court 2 (Standard PVC Mat)', 'PVC', 150.00, 220.00, 'ACTIVE'),
+(3, 'Court 3 (Standard PVC Mat)', 'PVC', 150.00, 220.00, 'ACTIVE'),
+(4, 'Court 4 (Standard PVC Mat)', 'PVC', 150.00, 220.00, 'ACTIVE'),
+(5, 'Court 5 (Pro Competition Acrylic VIP)', 'ACRYLIC', 180.00, 260.00, 'ACTIVE'),
+(6, 'Court 6 (Pro Competition Acrylic VIP)', 'ACRYLIC', 180.00, 260.00, 'ACTIVE');
 
 -- 2. Seed Mini Store Products (8 Items)
 INSERT INTO products (sku, name, category, price, stock_qty, image_url, is_active) VALUES
-('SHUTTLE-RSL-SILVER-TUBE', 'ลูกแบด RSL Silver (ยกหลอด 12 ลูก)', 'SHUTTLECOCK', 850.00, 25, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
-('SHUTTLE-RSL-SILVER-PIECE', 'ลูกแบด RSL Silver (แบ่งขาย 1 ลูก)', 'SHUTTLECOCK', 75.00, 60, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
-('SHUTTLE-VICTOR-MASTER1', 'ลูกแบด Victor Master No.1 (ยกหลอด 12 ลูก)', 'SHUTTLECOCK', 990.00, 15, 'https://images.unsplash.com/photo-1613918108466-292b78a8ef95?w=400', TRUE),
-('DRINK-SINGHA-WATER', 'น้ำดื่มสิงห์ 600 มล. (แช่เย็น)', 'DRINK', 15.00, 120, 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=400', TRUE),
-('DRINK-POCARI-SWEAT', 'เครื่องดื่มเกลือแร่ Pocari Sweat 500 มล.', 'DRINK', 30.00, 80, 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', TRUE),
-('DRINK-MINERE-WATER', 'น้ำแร่ธรรมชาติ Minere 500 มล.', 'DRINK', 20.00, 50, 'https://images.unsplash.com/photo-1559839914-17aae19cec71?w=400', TRUE),
-('RENTAL-RACKET-ASTROX', 'บริการเช่าไม้แบด Yonex Astrox 88D Play (ต่อแมตช์)', 'RENTAL', 80.00, 10, 'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=400', TRUE),
-('RENTAL-GRIP-YONEX', 'กริปพันด้าม Yonex Super Grap (AC102EX พร้อมบริการพัน)', 'RENTAL', 60.00, 40, 'https://images.unsplash.com/photo-1584813470613-5b1c1cad3d69?w=400', TRUE);
+('SHUTTLE-RSL-SILVER-TUBE', 'RSL Silver Shuttlecocks (Tube of 12)', 'SHUTTLECOCK', 850.00, 25, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
+('SHUTTLE-RSL-SILVER-PIECE', 'RSL Silver Shuttlecock (Single Piece)', 'SHUTTLECOCK', 75.00, 60, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400', TRUE),
+('SHUTTLE-VICTOR-MASTER1', 'Victor Master No.1 Shuttlecocks (Tube of 12)', 'SHUTTLECOCK', 990.00, 15, 'https://images.unsplash.com/photo-1613918108466-292b78a8ef95?w=400', TRUE),
+('DRINK-SINGHA-WATER', 'Singha Drinking Water 600ml (Chilled)', 'DRINK', 15.00, 120, 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=400', TRUE),
+('DRINK-POCARI-SWEAT', 'Pocari Sweat Electrolyte Drink 500ml', 'DRINK', 30.00, 80, 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400', TRUE),
+('DRINK-MINERE-WATER', 'Minere Natural Mineral Water 500ml', 'DRINK', 20.00, 50, 'https://images.unsplash.com/photo-1559839914-17aae19cec71?w=400', TRUE),
+('RENTAL-RACKET-ASTROX', 'Yonex Astrox 88D Play Racket Rental', 'RENTAL', 80.00, 10, 'https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=400', TRUE),
+('RENTAL-GRIP-YONEX', 'Yonex Super Grap Grip (AC102EX with Wrapping)', 'RENTAL', 60.00, 40, 'https://images.unsplash.com/photo-1584813470613-5b1c1cad3d69?w=400', TRUE);
 
 -- 3. Seed Users
 INSERT INTO users (id, line_user_id, display_name, picture_url, phone, role) VALUES
-('a0000000-0000-0000-0000-000000000001', 'U_ADMIN_SMASHHUB', 'สมชาย ผู้จัดการสนาม (Admin)', 'https://api.dicebear.com/7.x/bottts/svg?seed=admin_somchai', '081-999-8888', 'ADMIN'),
-('b0000000-0000-0000-0000-000000000001', 'U_CUSTOMER_KAN', 'กานต์ ธนบดี', 'https://api.dicebear.com/7.x/avataaars/svg?seed=kan', '089-111-2233', 'CUSTOMER'),
-('b0000000-0000-0000-0000-000000000002', 'U_CUSTOMER_NUT', 'ณัฐพงษ์ วงศ์วิวัฒน์', 'https://api.dicebear.com/7.x/avataaars/svg?seed=nuttapong', '086-444-5566', 'CUSTOMER'),
-('b0000000-0000-0000-0000-000000000003', 'U_CUSTOMER_TNP', 'ธนาภา สินสมบูรณ์', 'https://api.dicebear.com/7.x/avataaars/svg?seed=thanapa', '082-777-8899', 'CUSTOMER'),
-('b0000000-0000-0000-0000-000000000004', 'U_CUSTOMER_WRP', 'วรพจน์ ศักดานรินทร์', 'https://api.dicebear.com/7.x/avataaars/svg?seed=worapoj', '095-222-3344', 'CUSTOMER');
+('a0000000-0000-0000-0000-000000000001', 'U_ADMIN_SMASHHUB', 'Somchai Manager (Arena Admin)', 'https://api.dicebear.com/7.x/bottts/svg?seed=admin_somchai', '081-999-8888', 'ADMIN'),
+('b0000000-0000-0000-0000-000000000001', 'U_CUSTOMER_KAN', 'Kan Thanabodee', 'https://api.dicebear.com/7.x/avataaars/svg?seed=kan', '089-111-2233', 'CUSTOMER'),
+('b0000000-0000-0000-0000-000000000002', 'U_CUSTOMER_NUT', 'Nuttapong Wongwiwat', 'https://api.dicebear.com/7.x/avataaars/svg?seed=nuttapong', '086-444-5566', 'CUSTOMER'),
+('b0000000-0000-0000-0000-000000000003', 'U_CUSTOMER_TNP', 'Thanapa Sinsomboon', 'https://api.dicebear.com/7.x/avataaars/svg?seed=thanapa', '082-777-8899', 'CUSTOMER'),
+('b0000000-0000-0000-0000-000000000004', 'U_CUSTOMER_WRP', 'Worapoj Sakdanarin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=worapoj', '095-222-3344', 'CUSTOMER');
 
--- 4. Seed Today's Bookings (All 4 Statuses)
+-- 4. Seed Today''s Bookings (All 4 Statuses)
 -- Using fixed UUIDs for deterministic foreign key relationships
 
 -- 4.1 Booking 1: CONFIRMED
--- Customer 1 (กานต์) books Court 1: 18:00 - 20:00 (Peak rate 220 x 2 = 440)
+-- Customer 1 (Kan) books Court 1: 18:00 - 20:00 (Peak rate 220 x 2 = 440)
 -- Items: 1x RSL Silver Tube (850) + 2x Pocari Sweat (60) = 910
 -- Total: 440 + 910 = 1,350 THB
 -- Status: CONFIRMED, Verified Slip attached, is_slot_locked = TRUE
@@ -74,8 +74,8 @@ INSERT INTO payment_slips (
     'c0000000-0000-0000-0000-000000000001',
     'https://placehold.co/600x800/004d40/ffffff?text=Slip+Verified+1350THB',
     'KBANK-20261024-9876543210',
-    'นายกานต์ ธนบดี',
-    '098-7-65432-1 (บจก. สแมชฮับ แบดมินตัน)',
+    'Kan Thanabodee',
+    '098-7-65432-1 (SmashHub Badminton Arena Co., Ltd.)',
     1350.00,
     'VERIFIED',
     '{"bank": "KBANK", "fee": 0, "verified_by": "OpenSlipVerify", "channel": "K+ Mobile"}'::jsonb,
@@ -85,7 +85,7 @@ INSERT INTO payment_slips (
 
 
 -- 4.2 Booking 2: PENDING_PAYMENT
--- Customer 2 (ณัฐพงษ์) books Court 2: 19:00 - 21:00 (Peak rate 220 x 2 = 440)
+-- Customer 2 (Nuttapong) books Court 2: 19:00 - 21:00 (Peak rate 220 x 2 = 440)
 -- Items: 2x Minere Water (40)
 -- Total: 440 + 40 = 480 THB
 -- Status: PENDING_PAYMENT (holding lock for 10 mins, expires in 8 minutes)
@@ -116,7 +116,7 @@ INSERT INTO booking_items (id, booking_id, product_id, qty, unit_price, subtotal
 
 
 -- 4.3 Booking 3: MANUAL_REVIEW
--- Customer 3 (ธนาภา) books Court 5 (VIP Acrylic): 17:00 - 19:00 (Peak rate 260 x 2 = 520)
+-- Customer 3 (Thanapa) books Court 5 (VIP Acrylic): 17:00 - 19:00 (Peak rate 260 x 2 = 520)
 -- Items: 1x Rental Yonex Astrox Racket (80)
 -- Total: 520 + 80 = 600 THB
 -- Status: MANUAL_REVIEW (slip verification failed with gateway timeout)
@@ -153,8 +153,8 @@ INSERT INTO payment_slips (
     'c0000000-0000-0000-0000-000000000003',
     'https://placehold.co/600x800/d97706/ffffff?text=Slip+Pending+Admin+Review',
     'SCB-20261024-1122334455',
-    'น.ส. ธนาภา สินสมบูรณ์',
-    '098-7-65432-1 (บจก. สแมชฮับ แบดมินตัน)',
+    'Thanapa Sinsomboon',
+    '098-7-65432-1 (SmashHub Badminton Arena Co., Ltd.)',
     600.00,
     'API_ERROR_PENDING_ADMIN',
     '{"error": "OpenSlipVerify Gateway Timeout (504)", "retry_count": 3, "last_attempt": "2026-10-24T03:10:00Z"}'::jsonb,
@@ -164,7 +164,7 @@ INSERT INTO payment_slips (
 
 
 -- 4.4 Booking 4: EXPIRED
--- Customer 4 (วรพจน์) booked Court 3: 14:00 - 16:00 (Normal rate 150 x 2 = 300)
+-- Customer 4 (Worapoj) booked Court 3: 14:00 - 16:00 (Normal rate 150 x 2 = 300)
 -- Customer did not upload slip within 10 minutes -> Expired!
 -- CRITICAL RULE: is_slot_locked = FALSE so other customers can book Court 3 at 14:00 and 15:00
 INSERT INTO bookings (

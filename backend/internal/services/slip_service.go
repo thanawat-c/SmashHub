@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	ErrDuplicateTransRef = errors.New("สลิปนี้เคยถูกใช้งานไปแล้ว (รหัสอ้างอิงซ้ำ)")
-	ErrUnderpaid         = errors.New("ยอดเงินในสลิปไม่ตรงกับยอดที่ต้องชำระ (โอนขาด)")
-	ErrWrongReceiver     = errors.New("บัญชีปลายทางไม่ถูกต้อง กรุณาโอนเข้าบัญชีร้านสแมชฮับ")
-	ErrExternalAPIDown   = errors.New("ระบบตรวจสลิปปลายทางขัดข้อง กำลังส่งให้แอดมินตรวจสอบ")
+	ErrDuplicateTransRef = errors.New("This payment slip has already been used (Duplicate transaction reference)")
+	ErrUnderpaid         = errors.New("The transfer amount is less than the required net total")
+	ErrWrongReceiver     = errors.New("Invalid recipient account. Please transfer to SmashHub Arena account.")
+	ErrExternalAPIDown   = errors.New("Automated bank verification timeout. Sent to admin manual review queue.")
 )
 
 type VerifySlipRequest struct {
@@ -56,20 +56,20 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 			Success:            true,
 			BookingStatus:      booking.Status,
 			VerificationStatus: models.SlipStatusVerified,
-			Message:            "การจองนี้ได้รับการยืนยันการชำระเงินเรียบร้อยแล้ว",
+			Message:            "Payment for this booking has already been verified and confirmed.",
 			Booking:            &booking,
 		}, nil
 	}
 
 	if booking.Status == models.BookingStatusExpired || booking.Status == models.BookingStatusCancelled {
-		return nil, errors.New("ใบจองนี้หมดอายุหรือถูกยกเลิกแล้ว ไม่สามารถแนบสลิปได้")
+		return nil, errors.New("This booking has expired or been cancelled. Slips cannot be attached.")
 	}
 
 	// 1. Prepare Slip Data & handle Mock Scenarios
 	transRef := req.TransRef
 	amount := req.Amount
-	receiverAccount := "098-7-65432-1 (บจก. สแมชฮับ แบดมินตัน)"
-	senderName := "ลูกค้าสแมชฮับ"
+	receiverAccount := "098-7-65432-1 (SmashHub Badminton Arena Co., Ltd.)"
+	senderName := "SmashHub Customer"
 	if booking.User != nil {
 		senderName = booking.User.DisplayName
 	}
@@ -136,7 +136,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 			Success:            false,
 			BookingStatus:      booking.Status,
 			VerificationStatus: models.SlipStatusRejectedDuplicate,
-			Message:            "ตรวจสอบไม่ผ่าน: สลิปนี้เคยถูกใช้งานไปแล้ว (รหัสอ้างอิงซ้ำ)",
+			Message:            "Verification failed: This slip has already been used (Duplicate reference).",
 			Slip:               &rejectedSlip,
 			Booking:            &booking,
 		}, ErrDuplicateTransRef
@@ -148,10 +148,10 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 	// Step 3: Check amount >= booking.net_total
 	if amount < booking.NetTotal {
 		rawPayload, _ := json.Marshal(map[string]interface{}{
-			"error":            "Amount mismatch",
-			"expected_amount":  booking.NetTotal,
+			"error":              "Amount mismatch",
+			"expected_amount":    booking.NetTotal,
 			"transferred_amount": amount,
-			"difference":       booking.NetTotal - amount,
+			"difference":         booking.NetTotal - amount,
 		})
 
 		rejectedSlip := models.PaymentSlip{
@@ -175,7 +175,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 			Success:            false,
 			BookingStatus:      booking.Status,
 			VerificationStatus: models.SlipStatusRejectedAmountMismatch,
-			Message:            fmt.Sprintf("ตรวจสอบไม่ผ่าน: ยอดเงินในสลิป (%.2f บาท) น้อยกว่ายอดที่ต้องชำระ (%.2f บาท)", amount, booking.NetTotal),
+			Message:            fmt.Sprintf("Verification failed: Slip amount (THB %.2f) is less than required total (THB %.2f)", amount, booking.NetTotal),
 			Slip:               &rejectedSlip,
 			Booking:            &booking,
 		}, ErrUnderpaid
@@ -185,7 +185,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 	if req.MockScenario == "MOCK_API_DOWN" {
 		rawPayload, _ := json.Marshal(map[string]interface{}{
 			"error":       "OpenSlipVerify Gateway Timeout (HTTP 504)",
-			"description": "ธนาคารปลายทางตอบสนองช้ากว่ากำหนด ส่งเข้าคิวตรวจโดยเจ้าหน้าที่",
+			"description": "Upstream bank server timed out. Queued for staff review.",
 			"timestamp":   time.Now().Format(time.RFC3339),
 		})
 
@@ -216,7 +216,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 			Success:            true,
 			BookingStatus:      models.BookingStatusManualReview,
 			VerificationStatus: models.SlipStatusAPIErrorPendingAdmin,
-			Message:            "ระบบตรวจสลิปอัตโนมัติขัดข้องชั่วคราว เจ้าหน้าที่กำลังตรวจสอบสลิปให้ท่านโดยเร็ว",
+			Message:            "Automated verification gateway timed out. Arena staff is reviewing your slip promptly.",
 			Slip:               &slip,
 			Booking:            &booking,
 		}, nil
@@ -252,7 +252,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("ไม่สามารถบันทึกผลการยืนยันได้: %w", err)
+		return nil, fmt.Errorf("failed to save confirmation: %w", err)
 	}
 
 	Hub.Broadcast("BOOKING_CONFIRMED", map[string]interface{}{
@@ -266,7 +266,7 @@ func (s *SlipService) VerifySlip(bookingID uuid.UUID, req VerifySlipRequest) (*S
 		Success:            true,
 		BookingStatus:      models.BookingStatusConfirmed,
 		VerificationStatus: models.SlipStatusVerified,
-		Message:            "ยืนยันการชำระเงินเรียบร้อยแล้ว คอร์ทของท่านพร้อมใช้งาน!",
+		Message:            "Payment verified successfully! Your court is confirmed and ready.",
 		Slip:               &verifiedSlip,
 		Booking:            &booking,
 	}, nil

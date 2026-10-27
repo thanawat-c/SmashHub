@@ -42,24 +42,24 @@ func (s *AuthService) Register(displayName, phone, email, password string) (*mod
 	password = strings.TrimSpace(password)
 
 	if displayName == "" {
-		return nil, "", errors.New("กรุณากรอกชื่อ-นามสกุล")
+		return nil, "", errors.New("full name / display name is required")
 	}
 	if phone == "" {
-		return nil, "", errors.New("กรุณากรอกเบอร์โทรศัพท์")
+		return nil, "", errors.New("phone number is required")
 	}
 	if len(password) < 4 {
-		return nil, "", errors.New("รหัสผ่านต้องมีความยาวอย่างน้อย 4 ตัวอักษร")
+		return nil, "", errors.New("password must be at least 4 characters")
 	}
 
 	// Check phone collision
 	var existing models.User
 	if err := s.db.Where("phone = ?", phone).First(&existing).Error; err == nil {
-		return nil, "", errors.New("เบอร์โทรศัพท์นี้ถูกใช้งานแล้วในระบบ")
+		return nil, "", errors.New("this phone number is already registered")
 	}
 
 	if email != "" {
 		if err := s.db.Where("email = ?", email).First(&existing).Error; err == nil {
-			return nil, "", errors.New("อีเมลนี้ถูกใช้งานแล้วในระบบ")
+			return nil, "", errors.New("this email address is already registered")
 		}
 	}
 
@@ -96,7 +96,7 @@ func (s *AuthService) Login(identifier, password string) (*models.User, string, 
 	password = strings.TrimSpace(password)
 
 	if identifier == "" {
-		return nil, "", errors.New("กรุณากรอกเบอร์โทรศัพท์ หรือชื่อผู้ใช้")
+		return nil, "", errors.New("please provide a phone number, email, or username")
 	}
 
 	var user models.User
@@ -104,7 +104,7 @@ func (s *AuthService) Login(identifier, password string) (*models.User, string, 
 		identifier, identifier, identifier, identifier).First(&user).Error
 
 	if err != nil {
-		return nil, "", errors.New("ไม่พบบัญชีผู้ใช้นี้ในระบบ กรุณาตรวจสอบข้อมูลหรือลงทะเบียนใหม่")
+		return nil, "", errors.New("account not found. Please check your credentials or register.")
 	}
 
 	// If password hash exists, verify it
@@ -112,7 +112,7 @@ func (s *AuthService) Login(identifier, password string) (*models.User, string, 
 		// Allow default demo password '123456' as fallback for recruiter convenience
 		if password != "123456" {
 			if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-				return nil, "", errors.New("รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+				return nil, "", errors.New("incorrect password. Please try again.")
 			}
 		}
 	}
@@ -133,7 +133,7 @@ func (s *AuthService) DemoLogin(role string) (*models.User, string, error) {
 	}
 
 	if err != nil {
-		return nil, "", errors.New("ไม่พบผู้ใช้สำหรับโหมดจำลอง")
+		return nil, "", errors.New("test user for demo mode not found")
 	}
 
 	token := generateToken()

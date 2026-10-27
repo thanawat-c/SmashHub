@@ -35,7 +35,7 @@ type DemoLoginRequest struct {
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณากรอกข้อมูลให้ครบถ้วน: ชื่อ, เบอร์โทรศัพท์ และรหัสผ่าน"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide all required fields: name, phone number, and password"})
 		return
 	}
 
@@ -46,7 +46,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "ลงทะเบียนสำเร็จ ยินดีต้อนรับสู่ SmashHub",
+		"message": "Registration successful. Welcome to SmashHub Arena!",
 		"user":    user,
 		"token":   token,
 	})
@@ -56,7 +56,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "กรุณากรอกเบอร์โทรศัพท์และรหัสผ่าน"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide your phone number / email and password"})
 		return
 	}
 
@@ -67,7 +67,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "เข้าสู่ระบบสำเร็จ",
+		"message": "Login successful",
 		"user":    user,
 		"token":   token,
 	})
@@ -88,7 +88,7 @@ func (h *AuthHandler) DemoLogin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "เข้าสู่ระบบในโหมดจำลองสำเร็จ",
+		"message": "Demo login successful",
 		"user":    user,
 		"token":   token,
 	})
@@ -119,6 +119,6 @@ func (h *AuthHandler) GetMe(c *gin.Context) {
 func (h *AuthHandler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "ออกจากระบบเรียบร้อย",
+		"message": "Logged out successfully",
 	})
 }

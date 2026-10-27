@@ -73,7 +73,7 @@ func (s *AdminService) ManualApprove(bookingID uuid.UUID, req ManualApproveReque
 		}
 
 		if booking.Status != models.BookingStatusManualReview && booking.Status != models.BookingStatusPendingPayment {
-			return fmt.Errorf("ไม่สามารถดำเนินการได้: สถานะปัจจุบันคือ %s", booking.Status)
+			return fmt.Errorf("action cannot be performed: current status is %s", booking.Status)
 		}
 
 		now := time.Now()
@@ -115,7 +115,7 @@ func (s *AdminService) ManualApprove(bookingID uuid.UUID, req ManualApproveReque
 			}
 
 		default:
-			return errors.New("Action ไม่ถูกต้อง (ต้องเป็น APPROVE หรือ REJECT)")
+			return errors.New("invalid action (must be APPROVE or REJECT)")
 		}
 
 		return nil
@@ -141,7 +141,7 @@ func (s *AdminService) ManualApprove(bookingID uuid.UUID, req ManualApproveReque
 // UpdateCheckInStatus updates check-in status (WAITING, CHECKED_IN, COMPLETED)
 func (s *AdminService) UpdateCheckInStatus(bookingID uuid.UUID, status string) (*models.Booking, error) {
 	if status != models.CheckInStatusWaiting && status != models.CheckInStatusCheckedIn && status != models.CheckInStatusCompleted {
-		return nil, errors.New("สถานะการเช็คอินไม่ถูกต้อง")
+		return nil, errors.New("invalid check-in status")
 	}
 
 	var booking models.Booking
@@ -169,7 +169,7 @@ func (s *AdminService) UpdateCheckInStatus(bookingID uuid.UUID, status string) (
 func (s *AdminService) UpdateCourtStatus(courtID uint, status string, normalRate, peakRate float64) (*models.Court, error) {
 	var court models.Court
 	if err := s.db.First(&court, courtID).Error; err != nil {
-		return nil, fmt.Errorf("ไม่พบคอร์ทรหัส %d", courtID)
+		return nil, fmt.Errorf("court not found with ID %d", courtID)
 	}
 
 	if status != "" {
@@ -199,7 +199,7 @@ func (s *AdminService) UpdateCourtStatus(courtID uint, status string, normalRate
 func (s *AdminService) RestockProduct(productID uint, addQty int, newPrice float64) (*models.Product, error) {
 	var product models.Product
 	if err := s.db.First(&product, productID).Error; err != nil {
-		return nil, fmt.Errorf("ไม่พบสินค้ารหัส %d", productID)
+		return nil, fmt.Errorf("product not found with ID %d", productID)
 	}
 
 	if addQty != 0 {

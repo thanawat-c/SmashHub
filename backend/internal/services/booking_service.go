@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	ErrCourtAlreadyBooked = errors.New("คอร์ทที่เลือกเพิ่งถูกจองไปเมื่อสักครู่")
-	ErrInsufficientStock  = errors.New("สินค้าในสต็อกไม่เพียงพอ")
-	ErrBookingNotFound    = errors.New("ไม่พบข้อมูลการจอง")
-	ErrInvalidBookingState= errors.New("สถานะการจองไม่ถูกต้องสำหรับการทำรายการนี้")
+	ErrCourtAlreadyBooked  = errors.New("the selected court was just booked by another user")
+	ErrInsufficientStock   = errors.New("insufficient inventory in stock")
+	ErrBookingNotFound     = errors.New("booking not found")
+	ErrInvalidBookingState = errors.New("invalid booking status for this operation")
 )
 
 type CourtSlotInput struct {
@@ -87,12 +87,12 @@ func (s *BookingService) GetCourtAvailability(dateStr string) (*AvailabilityResp
 
 	playDate, err := time.Parse("2006-01-02", dateStr)
 	if err != nil {
-		return nil, fmt.Errorf("รูปแบบวันที่ไม่ถูกต้อง (ต้องเป็น YYYY-MM-DD): %w", err)
+		return nil, fmt.Errorf("invalid date format (must be YYYY-MM-DD): %w", err)
 	}
 
 	var courts []models.Court
 	if err := s.db.Order("court_number asc").Find(&courts).Error; err != nil {
-		return nil, fmt.Errorf("เกิดข้อผิดพลาดในการดึงข้อมูลคอร์ท: %w", err)
+		return nil, fmt.Errorf("failed to fetch courts: %w", err)
 	}
 
 	// Fetch active locked court slots for that date
@@ -103,7 +103,7 @@ func (s *BookingService) GetCourtAvailability(dateStr string) (*AvailabilityResp
 		Select("booking_courts.*, bookings.status as booking_status, bookings.expires_at as booking_expires_at, bookings.booking_no as booking_no").
 		Find(&lockedSlots).Error
 	if err != nil {
-		return nil, fmt.Errorf("เกิดข้อผิดพลาดในการดึงสล็อตที่ถูกจอง: %w", err)
+		return nil, fmt.Errorf("failed to fetch locked court slots: %w", err)
 	}
 
 	// Map locked slots by court_id and start_hour
@@ -189,7 +189,7 @@ func (s *BookingService) GetProducts() ([]models.Product, error) {
 func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingResponse, error) {
 	playDate, err := time.Parse("2006-01-02", req.PlayDate)
 	if err != nil {
-		return nil, fmt.Errorf("รูปแบบวันที่ไม่ถูกต้อง (YYYY-MM-DD): %w", err)
+		return nil, fmt.Errorf("invalid date format (YYYY-MM-DD): %w", err)
 	}
 
 	var createdBooking *models.Booking
@@ -212,7 +212,7 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 					Role:        models.RoleCustomer,
 				}
 				if err := tx.Create(&user).Error; err != nil {
-					return fmt.Errorf("ไม่สามารถสร้างผู้ใช้งานได้: %w", err)
+					return fmt.Errorf("failed to create user record: %w", err)
 				}
 			} else {
 				return err
@@ -230,17 +230,17 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 			var product models.Product
 			// Row-level lock on product row
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&product, itemInput.ProductID).Error; err != nil {
-				return fmt.Errorf("ไม่พบสินค้ารหัส %d: %w", itemInput.ProductID, err)
+				return fmt.Errorf("product not found with ID %d: %w", itemInput.ProductID, err)
 			}
 
 			if product.StockQty < itemInput.Qty {
-				return fmt.Errorf("สินค้า %s มีสต็อกไม่เพียงพอ (คงเหลือ %d ชิ้น)", product.Name, product.StockQty)
+				return fmt.Errorf("product %s has insufficient stock (%d remaining)", product.Name, product.StockQty)
 			}
 
 			// Deduct stock
 			product.StockQty -= itemInput.Qty
 			if err := tx.Save(&product).Error; err != nil {
-				return fmt.Errorf("ไม่สามารถตัดสต็อกสินค้า %s ได้: %w", product.Name, err)
+				return fmt.Errorf("failed to deduct stock for %s: %w", product.Name, err)
 			}
 
 			subtotal := product.Price * float64(itemInput.Qty)
@@ -263,10 +263,10 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 			court, exists := courtCache[slot.CourtID]
 			if !exists {
 				if err := tx.First(&court, slot.CourtID).Error; err != nil {
-					return fmt.Errorf("ไม่พบคอร์ทรหัส %d: %w", slot.CourtID, err)
+					return fmt.Errorf("court not found with ID %d: %w", slot.CourtID, err)
 				}
 				if court.Status == "MAINTENANCE" {
-					return fmt.Errorf("คอร์ท %s อยู่ระหว่างปิดปรับปรุง ไม่สามารถจองได้", court.Name)
+					return fmt.Errorf("court %s is currently under maintenance and cannot be booked", court.Name)
 				}
 				courtCache[slot.CourtID] = court
 			}
@@ -308,7 +308,7 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 		}
 
 		if err := tx.Create(&booking).Error; err != nil {
-			return fmt.Errorf("ไม่สามารถสร้างข้อมูลการจองได้: %w", err)
+			return fmt.Errorf("failed to create booking record: %w", err)
 		}
 
 		// 6. Insert booking courts (Enforces Partial Unique Index: idx_unique_active_court_slot)
@@ -320,7 +320,7 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 					strings.Contains(err.Error(), "duplicate key") {
 					return ErrCourtAlreadyBooked
 				}
-				return fmt.Errorf("ไม่สามารถล็อคคอร์ทได้: %w", err)
+				return fmt.Errorf("failed to lock court slot: %w", err)
 			}
 		}
 
@@ -328,7 +328,7 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 		for i := range bookingItems {
 			bookingItems[i].BookingID = booking.ID
 			if err := tx.Create(&bookingItems[i]).Error; err != nil {
-				return fmt.Errorf("ไม่สามารถบันทึกรายการสินค้าได้: %w", err)
+				return fmt.Errorf("failed to record booking items: %w", err)
 			}
 		}
 
@@ -346,7 +346,7 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 
 	// Generate PromptPay QR details
 	storePhone := "0987654321"
-	storeName := "บจก. สแมชฮับ แบดมินตัน (SmashHub)"
+	storeName := "SmashHub Badminton Arena Co., Ltd."
 	qrPayload := GeneratePromptPayPayload(storePhone, createdBooking.NetTotal)
 
 	// Broadcast SSE event
@@ -391,11 +391,11 @@ func (s *BookingService) AddItemsToBooking(bookingID uuid.UUID, items []BookingI
 			var product models.Product
 			// Lock product row
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&product, itemInput.ProductID).Error; err != nil {
-				return fmt.Errorf("ไม่พบสินค้า ID %d", itemInput.ProductID)
+				return fmt.Errorf("product not found with ID %d", itemInput.ProductID)
 			}
 
 			if product.StockQty < itemInput.Qty {
-				return fmt.Errorf("สินค้า %s มีสต็อกไม่เพียงพอ (คงเหลือ %d ชิ้น)", product.Name, product.StockQty)
+				return fmt.Errorf("product %s has insufficient stock (%d remaining)", product.Name, product.StockQty)
 			}
 
 			// Deduct stock
@@ -483,7 +483,7 @@ func (s *BookingService) GetMyBookings(userID, phone, lineUserID string) ([]mode
 func (s *BookingService) CancelBooking(bookingID string, reason string) (*models.Booking, error) {
 	uid, err := uuid.Parse(bookingID)
 	if err != nil {
-		return nil, fmt.Errorf("รหัสการจองไม่ถูกต้อง")
+		return nil, fmt.Errorf("invalid booking ID")
 	}
 
 	var cancelledBooking models.Booking
@@ -491,27 +491,27 @@ func (s *BookingService) CancelBooking(bookingID string, reason string) (*models
 	err = s.db.Transaction(func(tx *gorm.DB) error {
 		var booking models.Booking
 		if err := tx.Preload("Courts").Preload("Items").First(&booking, "id = ?", uid).Error; err != nil {
-			return fmt.Errorf("ไม่พบข้อมูลการจอง: %w", err)
+			return fmt.Errorf("booking not found: %w", err)
 		}
 
 		if booking.Status == models.BookingStatusCancelled {
-			return fmt.Errorf("รายการจองนี้ถูกยกเลิกไปแล้ว")
+			return fmt.Errorf("this booking has already been cancelled")
 		}
 		if booking.Status == models.BookingStatusExpired {
-			return fmt.Errorf("รายการจองนี้หมดเวลาไปแล้ว ไม่สามารถยกเลิกได้")
+			return fmt.Errorf("this booking has already expired and cannot be cancelled")
 		}
 
 		// 1. Update Booking Status to CANCELLED
 		booking.Status = models.BookingStatusCancelled
 		if err := tx.Save(&booking).Error; err != nil {
-			return fmt.Errorf("ไม่สามารถอัปเดตสถานะการจอง: %w", err)
+			return fmt.Errorf("failed to update booking status: %w", err)
 		}
 
 		// 2. Unlock court slots (is_slot_locked = FALSE)
 		if err := tx.Model(&models.BookingCourt{}).
 			Where("booking_id = ?", booking.ID).
 			Update("is_slot_locked", false).Error; err != nil {
-			return fmt.Errorf("ไม่สามารถปลดล็อคสนามได้: %w", err)
+			return fmt.Errorf("failed to release court slot: %w", err)
 		}
 
 		// 3. Restore inventory stock for each item
@@ -519,7 +519,7 @@ func (s *BookingService) CancelBooking(bookingID string, reason string) (*models
 			if err := tx.Model(&models.Product{}).
 				Where("id = ?", item.ProductID).
 				UpdateColumn("stock_qty", gorm.Expr("stock_qty + ?", item.Qty)).Error; err != nil {
-				return fmt.Errorf("ไม่สามารถคืนสต็อกสินค้าได้: %w", err)
+				return fmt.Errorf("failed to restore product inventory: %w", err)
 			}
 		}
 
