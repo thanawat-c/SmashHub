@@ -29,8 +29,8 @@ const dateChips = computed(() => {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
     const val = d.toISOString().split('T')[0]
-    const weekday = d.toLocaleDateString('th-TH', { weekday: 'short' })
-    const dayMonth = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })
+    const weekday = d.toLocaleDateString('en-US', { weekday: 'short' })
+    const dayMonth = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
     dates.push({ val, weekday, dayMonth, isToday: i === 0 })
   }
   return dates
@@ -100,9 +100,9 @@ function getAvailableCountForCourt(court) {
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-900">
           <Calendar class="w-3.5 h-3.5 text-emerald-600" />
-          <span>เลือกวันที่</span>
+          <span>Select Date</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">เปิดทุกวัน 10:00 - 22:00</span>
+        <span class="text-[10px] text-slate-400 font-medium">Daily 10:00 - 22:00</span>
       </div>
 
       <!-- Horizontal Date Bar -->
@@ -112,7 +112,7 @@ function getAvailableCountForCourt(court) {
           :key="chip.val"
           @click="onDateChange(chip.val)"
           :class="[
-            'flex flex-col items-center justify-center px-3 py-1.5 rounded-xl text-center transition flex-shrink-0 min-w-[56px] border',
+            'flex flex-col items-center justify-center px-3 py-1.5 rounded-xl text-center transition flex-shrink-0 min-w-[56px] border cursor-pointer',
             bookingStore.selectedDate === chip.val
               ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
               : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
@@ -131,23 +131,23 @@ function getAvailableCountForCourt(court) {
     <!-- Court Selection Carousel (MATCHi Club Court Selector) -->
     <div class="bg-white border-b border-slate-200/90 px-3.5 py-2.5 flex-shrink-0">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">เลือกสนาม (Court)</span>
+        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Select Court</span>
         <div class="flex items-center space-x-1 text-[10px]">
           <button
             @click="courtFilter = 'ALL'"
-            :class="['px-2 py-0.5 rounded-md font-semibold transition', courtFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100']"
+            :class="['px-2 py-0.5 rounded-md font-semibold transition cursor-pointer', courtFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100']"
           >
-            ทั้งหมด
+            All
           </button>
           <button
             @click="courtFilter = 'PVC'"
-            :class="['px-2 py-0.5 rounded-md font-semibold transition', courtFilter === 'PVC' ? 'bg-emerald-700 text-white' : 'text-slate-500 hover:bg-slate-100']"
+            :class="['px-2 py-0.5 rounded-md font-semibold transition cursor-pointer', courtFilter === 'PVC' ? 'bg-emerald-700 text-white' : 'text-slate-500 hover:bg-slate-100']"
           >
             PVC
           </button>
           <button
             @click="courtFilter = 'ACRYLIC'"
-            :class="['px-2 py-0.5 rounded-md font-semibold transition', courtFilter === 'ACRYLIC' ? 'bg-blue-700 text-white' : 'text-slate-500 hover:bg-slate-100']"
+            :class="['px-2 py-0.5 rounded-md font-semibold transition cursor-pointer', courtFilter === 'ACRYLIC' ? 'bg-blue-700 text-white' : 'text-slate-500 hover:bg-slate-100']"
           >
             VIP
           </button>
@@ -161,7 +161,7 @@ function getAvailableCountForCourt(court) {
           :key="court.court_id"
           @click="selectCourt(court)"
           :class="[
-            'flex-shrink-0 px-3 py-2 rounded-xl text-left border transition relative min-w-[110px]',
+            'flex-shrink-0 px-3 py-2 rounded-xl text-left border transition relative min-w-[110px] cursor-pointer',
             activeCourt?.court_id === court.court_id
               ? 'bg-emerald-50/80 border-emerald-600 text-emerald-950 shadow-2xs ring-1 ring-emerald-600/30'
               : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800'
@@ -176,7 +176,7 @@ function getAvailableCountForCourt(court) {
           </span>
 
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-900">คอร์ท {{ court.court_number }}</span>
+            <span class="text-xs font-bold text-slate-900">Court {{ court.court_number }}</span>
             <span
               :class="[
                 'text-[8px] font-bold px-1.5 py-0.2 rounded-xs',
@@ -188,7 +188,7 @@ function getAvailableCountForCourt(court) {
           </div>
 
           <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between font-mono">
-            <span>ว่าง {{ getAvailableCountForCourt(court) }} ชม.</span>
+            <span>{{ getAvailableCountForCourt(court) }}h open</span>
             <span class="font-semibold text-slate-600">฿{{ court.court_type === 'ACRYLIC' ? '180' : '150' }}</span>
           </div>
         </button>
@@ -205,7 +205,7 @@ function getAvailableCountForCourt(court) {
     <div class="flex-1 overflow-y-auto p-3.5 pb-28">
       <div v-if="bookingStore.isLoading" class="flex flex-col items-center justify-center py-20 space-y-2 text-slate-400">
         <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <span class="text-xs">กำลังโหลดตารางเวลา...</span>
+        <span class="text-xs">Loading availability...</span>
       </div>
 
       <div v-else-if="activeCourt" class="space-y-3">
@@ -213,21 +213,21 @@ function getAvailableCountForCourt(court) {
         <div class="bg-white rounded-2xl border border-slate-200/90 p-3 flex items-center justify-between shadow-2xs">
           <div>
             <div class="flex items-center space-x-2">
-              <h3 class="text-sm font-extrabold text-slate-900">คอร์ท {{ activeCourt.court_number }} ({{ activeCourt.court_name }})</h3>
+              <h3 class="text-sm font-extrabold text-slate-900">Court {{ activeCourt.court_number }} ({{ activeCourt.court_name }})</h3>
               <span
                 :class="[
                   'text-[9px] font-bold px-1.5 py-0.2 rounded-md',
                   activeCourt.court_type === 'ACRYLIC' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                 ]"
               >
-                {{ activeCourt.court_type === 'ACRYLIC' ? 'พื้น Acrylic มาตรฐาน VIP' : 'พื้นยาง PVC Competition' }}
+                {{ activeCourt.court_type === 'ACRYLIC' ? 'VIP Acrylic Floor' : 'PVC Competition Mat' }}
               </span>
             </div>
-            <p class="text-[11px] text-slate-500 mt-0.5">เลือกช่วงเวลาที่ต้องการเล่น (สามารถแตะเลือกได้หลายชั่วโมง)</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">Select your desired playing hours (multi-hour selection supported)</p>
           </div>
           <div class="text-right">
-            <span class="text-[10px] text-slate-400 block">อัตราค่าบริการ</span>
-            <span class="text-xs font-bold font-mono text-slate-800">฿{{ activeCourt.court_type === 'ACRYLIC' ? '180-220' : '150-180' }}/ชม.</span>
+            <span class="text-[10px] text-slate-400 block">Rate</span>
+            <span class="text-xs font-bold font-mono text-slate-800">฿{{ activeCourt.court_type === 'ACRYLIC' ? '180-220' : '150-180' }}/h</span>
           </div>
         </div>
 
@@ -276,7 +276,7 @@ function getAvailableCountForCourt(court) {
                   </span>
                 </div>
                 <div class="text-[10px] text-slate-400 font-mono mt-0.5">
-                  1 ชม. (60 นาที)
+                  1 Hour (60 mins)
                 </div>
               </div>
             </div>
@@ -288,9 +288,9 @@ function getAvailableCountForCourt(court) {
                   ฿{{ item.slot.hourly_rate }}
                 </div>
                 <div class="text-[9px]">
-                  <span v-if="item.slot.status === 'AVAILABLE'" class="text-emerald-600 font-medium">ว่าง</span>
-                  <span v-else-if="item.slot.status === 'LOCKED_PENDING'" class="text-amber-600 font-medium">ติดจอง (รอโอน)</span>
-                  <span v-else class="text-slate-400 font-medium">มีผู้เล่นแล้ว</span>
+                  <span v-if="item.slot.status === 'AVAILABLE'" class="text-emerald-600 font-medium">Available</span>
+                  <span v-else-if="item.slot.status === 'LOCKED_PENDING'" class="text-amber-600 font-medium">Pending Transfer</span>
+                  <span v-else class="text-slate-400 font-medium">Booked</span>
                 </div>
               </div>
 
@@ -298,13 +298,13 @@ function getAvailableCountForCourt(court) {
                 v-if="item.isSelected"
                 class="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-bold"
               >
-                เลือกแล้ว
+                Selected
               </div>
               <div
                 v-else-if="item.slot.status === 'AVAILABLE'"
                 class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-800 text-[10px] font-semibold transition"
               >
-                เลือก
+                Select
               </div>
             </div>
           </div>
@@ -318,11 +318,11 @@ function getAvailableCountForCourt(court) {
         <div class="flex items-center justify-between">
           <div>
             <div class="text-[10px] text-slate-500 font-medium">
-              เลือกไว้ {{ bookingStore.selectedSlots.length }} ช่วงเวลา
+              {{ bookingStore.selectedSlots.length }} slot(s) selected
             </div>
             <div class="text-base font-black text-slate-900 font-mono flex items-baseline space-x-1">
               <span class="text-emerald-700">฿{{ bookingStore.courtTotal.toLocaleString() }}</span>
-              <span class="text-[10px] text-slate-400 font-normal font-sans">({{ bookingStore.selectedSlots.length }} ชม.)</span>
+              <span class="text-[10px] text-slate-400 font-normal font-sans">({{ bookingStore.selectedSlots.length }}h)</span>
             </div>
           </div>
 
@@ -336,7 +336,7 @@ function getAvailableCountForCourt(court) {
                 : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
             ]"
           >
-            <span>ถัดไป: สั่งสินค้า</span>
+            <span>Next: Add-ons</span>
             <ChevronRight class="w-4 h-4" />
           </button>
         </div>
@@ -348,8 +348,8 @@ function getAvailableCountForCourt(court) {
             :key="slot.courtId + '-' + slot.startHour"
             class="inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-mono whitespace-nowrap"
           >
-            <span>คอร์ท {{ slot.courtNumber }} ({{ slot.startHour }}:00)</span>
-            <button @click="bookingStore.toggleCourtSlot({ court_id: slot.courtId }, { start_hour: slot.startHour, status: 'AVAILABLE' })" class="text-emerald-700 hover:text-slate-900 ml-0.5">×</button>
+            <span>Court {{ slot.courtNumber }} ({{ slot.startHour }}:00)</span>
+            <button @click="bookingStore.toggleCourtSlot({ court_id: slot.courtId }, { start_hour: slot.startHour, status: 'AVAILABLE' })" class="text-emerald-700 hover:text-slate-900 ml-0.5 cursor-pointer">×</button>
           </span>
         </div>
       </div>

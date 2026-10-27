@@ -10,10 +10,10 @@ import { Calendar, ShoppingBag, CreditCard, Ticket, Check } from 'lucide-vue-nex
 const bookingStore = useBookingStore()
 
 const steps = [
-  { num: 1, label: 'เลือกสนาม' },
-  { num: 2, label: 'อุปกรณ์' },
-  { num: 3, label: 'ชำระเงิน' },
-  { num: 4, label: 'ตั๋วเข้าเล่น' }
+  { num: 1, label: 'Courts' },
+  { num: 2, label: 'Add-ons' },
+  { num: 3, label: 'Payment' },
+  { num: 4, label: 'Pass' }
 ]
 function goToStep(stepNum) {
   if (stepNum < bookingStore.currentStep) {

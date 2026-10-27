@@ -43,12 +43,12 @@ function handleLogout() {
     <!-- Clean White Navigation Bar -->
     <header class="bg-white text-slate-800 border-b border-slate-200/80 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-50 shadow-2xs">
       <div class="flex items-center space-x-2.5">
-        <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs font-bold">
-          🏸
+        <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs shadow-xs font-bold tracking-tighter">
+          SH
         </div>
         <div>
           <span class="text-sm font-black text-slate-900 tracking-tight">SmashHub</span>
-          <span class="text-slate-400 text-[11px] ml-1.5 hidden lg:inline">ระบบจองสนามแบดมินตัน & มินิสโตร์ POS</span>
+          <span class="text-slate-400 text-[11px] ml-1.5 hidden lg:inline">Arena Management & POS</span>
         </div>
       </div>
 
@@ -64,8 +64,7 @@ function handleLogout() {
                 : 'text-slate-500 hover:text-slate-800'
             ]"
           >
-            <span>📱</span>
-            <span>ฝั่งลูกค้า (LIFF)</span>
+            <span>Customer LIFF</span>
           </button>
 
           <button
@@ -77,18 +76,17 @@ function handleLogout() {
                 : 'text-slate-500 hover:text-slate-800'
             ]"
           >
-            <span>🏢</span>
-            <span>ฝั่งร้านค้า (POS)</span>
+            <span>Admin POS</span>
           </button>
         </div>
 
         <button
           @click="openCustomerBookings"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1"
-          title="ดูประวัติการจองของฉัน"
+          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5"
+          title="View my booking history"
         >
           <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
-          <span class="hidden md:inline">ประวัติการจอง</span>
+          <span class="hidden md:inline">My Bookings</span>
         </button>
 
         <button
@@ -97,7 +95,7 @@ function handleLogout() {
             'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-900 hover:bg-slate-100 hidden sm:inline-flex items-center space-x-1',
             route.path === '/demo' ? 'bg-slate-200 text-slate-900 font-bold' : ''
           ]"
-          title="ดูแบบแบ่ง 2 จอเทียบกัน"
+          title="Dual split screen preview"
         >
           <span>Split View</span>
         </button>
@@ -112,7 +110,7 @@ function handleLogout() {
             class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center space-x-1.5 shadow-2xs active:scale-95"
           >
             <LogIn class="w-3.5 h-3.5" />
-            <span>เข้าสู่ระบบ / สมัครสมาชิก</span>
+            <span>Sign In / Register</span>
           </button>
         </div>
 
@@ -133,7 +131,7 @@ function handleLogout() {
               </div>
               <div class="text-[9px] font-mono leading-none mt-0.5">
                 <span v-if="authStore.isAdmin" class="text-emerald-700 font-bold">Admin POS</span>
-                <span v-else class="text-slate-500">Customer</span>
+                <span v-else class="text-slate-500">Member</span>
               </div>
             </div>
             <ChevronDown class="w-3 h-3 text-slate-400" />
@@ -155,7 +153,7 @@ function handleLogout() {
                   authStore.isAdmin ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
                 ]"
               >
-                {{ authStore.isAdmin ? '👑 Store Manager (Admin)' : '🏸 Member (Customer)' }}
+                {{ authStore.isAdmin ? 'Store Manager (Admin)' : 'Member (Customer)' }}
               </span>
             </div>
 
@@ -164,16 +162,16 @@ function handleLogout() {
                 @click="openCustomerBookings"
                 class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2 font-medium"
               >
-                <span>📋</span>
-                <span>ประวัติการจอง & ตั๋วของฉัน</span>
+                <ClipboardList class="w-3.5 h-3.5 text-slate-400" />
+                <span>My Bookings & Pass</span>
               </button>
 
               <button
                 @click="showUserMenu = false; router.push('/liff')"
                 class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2"
               >
-                <span>📱</span>
-                <span>จองสนามแบดมินตัน (LINE LIFF)</span>
+                <User class="w-3.5 h-3.5 text-slate-400" />
+                <span>Book Court (Customer LIFF)</span>
               </button>
 
               <button
@@ -181,8 +179,8 @@ function handleLogout() {
                 @click="showUserMenu = false; router.push('/admin')"
                 class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2"
               >
-                <span>🏢</span>
-                <span>ระบบบริหารหลังร้าน (Admin POS)</span>
+                <ShieldCheck class="w-3.5 h-3.5 text-emerald-600" />
+                <span>Backoffice (Admin POS)</span>
               </button>
 
               <button
@@ -190,7 +188,7 @@ function handleLogout() {
                 class="w-full px-3.5 py-2 text-left text-rose-600 hover:bg-rose-50 transition flex items-center space-x-2 font-semibold border-t border-slate-100 mt-1 pt-2"
               >
                 <LogOut class="w-3.5 h-3.5" />
-                <span>ออกจากระบบ</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>
