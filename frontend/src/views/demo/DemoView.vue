@@ -6,8 +6,8 @@ import { useBookingStore } from '@/stores/bookingStore'
 import { useLineProfileStore } from '@/stores/lineProfile'
 import { useAdminStore } from '@/stores/adminStore'
 import {
-  Smartphone, Monitor, Sparkles, CheckCircle, XCircle, AlertTriangle,
-  Server, Cpu, Play, RefreshCw, Zap, ShieldCheck
+  Smartphone, Monitor, CheckCircle, XCircle, AlertTriangle,
+  Server, Cpu, Play, RefreshCw, Zap, ShieldCheck, Terminal
 } from 'lucide-vue-next'
 import { ElNotification } from 'element-plus'
 
@@ -22,78 +22,78 @@ const latestArchitectureNote = ref(null)
 const scenarios = [
   {
     key: 'MOCK_VALID',
-    label: 'สลิปถูกต้อง (Valid)',
-    subLabel: 'ยอดตรง + ผ่านฉลุย',
+    label: 'Valid Slip',
+    subLabel: 'Amount Matches + Instant Confirmation',
     btnClass: 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/40 shadow-glow-emerald',
     icon: CheckCircle,
     color: 'emerald',
-    badge: '🟢 MOCK_VALID',
+    badge: 'MOCK_VALID',
     engineeringExplanation: {
-      title: '✅ 4-Step Verification: ผ่านครบ 100%',
+      title: '4-Step Verification: All Checks Passed (100%)',
       steps: [
-        '1. Check trans_ref: ผ่าน ไม่พบรายการซ้ำในตาราง payment_slips',
-        '2. Check บัญชีผู้รับ: ตรงกับ บจก. สแมชฮับ แบดมินตัน (098-7-65432-1)',
-        '3. Check ยอดเงิน: ยอดโอนในสลิป >= booking.net_total',
-        '4. External Gateway: ตอบกลับสำเร็จ (HTTP 200)'
+        '1. Check trans_ref: Unique reference, no duplicate in payment_slips',
+        '2. Receiver account: Matches SmashHub Badminton Co., Ltd. (098-7-65432-1)',
+        '3. Amount verification: Transferred amount >= booking.net_total',
+        '4. External Gateway: HTTP 200 OK verification'
       ],
-      result: 'DB State: booking.status = CONFIRMED, ล็อคคอร์ทถาวร, ออก E-Ticket พร้อม QR และ Broadcast SSE ซิงค์แอดมินทันที'
+      result: 'DB: booking.status = CONFIRMED, permanent slot lock, digital pass QR issued, instant SSE broadcast to Admin POS.'
     }
   },
   {
     key: 'MOCK_DUPLICATE',
-    label: 'สลิปเวียนเทียน (Duplicate)',
-    subLabel: 'ใช้สลิปซ้ำเดิม',
+    label: 'Duplicate Slip',
+    subLabel: 'Reused Transaction Ref',
     btnClass: 'bg-rose-600 hover:bg-rose-500 text-white border-rose-400/40',
     icon: XCircle,
     color: 'rose',
-    badge: '🔴 MOCK_DUPLICATE',
+    badge: 'MOCK_DUPLICATE',
     engineeringExplanation: {
-      title: '🚨 Step 1 Failed: ตรวจพบสลิปเวียนเทียน',
+      title: 'Step 1 Failed: Reused Slip Detected',
       steps: [
-        '1. Check trans_ref ซ้ำ: พบรหัสอ้างอิงเดิมใน payment_slips (DB Key Collision)',
-        '2. Transaction Rollback ป้องกัน Double Spending',
-        '3. บันทึกประวัติสลิป: verification_status = REJECTED_DUPLICATE',
-        '4. ส่ง HTTP 409 Conflict กลับไปยังหน้า LIFF ลูกค้า'
+        '1. Check trans_ref: Key collision found in payment_slips table',
+        '2. Atomic Transaction Rollback to prevent double spending',
+        '3. Slip recorded: verification_status = REJECTED_DUPLICATE',
+        '4. Return HTTP 409 Conflict to customer LIFF client'
       ],
-      result: 'สถานะใบจองคงเดิมที่ PENDING_PAYMENT และคงล็อคเวลา 10 นาทีเดิมไว้'
+      result: 'Booking remains in PENDING_PAYMENT with existing 10-minute expiry timer.'
     }
   },
   {
     key: 'MOCK_UNDERPAID',
-    label: 'ยอดเงินไม่ครบ (Underpaid)',
-    subLabel: 'โอนขาด < ยอดบิล',
+    label: 'Underpaid Slip',
+    subLabel: 'Amount < Net Total',
     btnClass: 'bg-amber-600 hover:bg-amber-500 text-white border-amber-400/40',
     icon: AlertTriangle,
     color: 'amber',
-    badge: '🟡 MOCK_UNDERPAID',
+    badge: 'MOCK_UNDERPAID',
     engineeringExplanation: {
-      title: '⚠️ Step 3 Failed: ยอดเงินในสลิปไม่ตรง',
+      title: 'Step 3 Failed: Transferred Amount Mismatch',
       steps: [
-        '1. Check trans_ref: ผ่าน (สลิปใหม่)',
-        '2. Check บัญชีปลายทาง: ผ่าน',
-        '3. Check ยอดเงิน: ยอดโอนในสลิป < booking.net_total',
-        '4. บันทึกสลิป: verification_status = REJECTED_AMOUNT_MISMATCH'
+        '1. Check trans_ref: Valid (new transaction)',
+        '2. Receiver account: Valid receiver',
+        '3. Amount check: Transferred amount < booking.net_total',
+        '4. Slip recorded: verification_status = REJECTED_AMOUNT_MISMATCH'
       ],
-      result: 'ระบบตอบกลับ HTTP 402 Payment Required แจ้งยอดที่ขาด และให้ลูกค้าแนบสลิปใหม่'
+      result: 'Returns HTTP 402 Payment Required indicating balance due and prompts for valid slip.'
     }
   },
   {
     key: 'MOCK_API_DOWN',
-    label: 'ธนาคารล่ม (Fallback)',
-    subLabel: 'ส่งแอดมินตรวจเอง',
+    label: 'Bank Timeout',
+    subLabel: 'Fallback to Manual Audit',
     btnClass: 'bg-purple-600 hover:bg-purple-500 text-white border-purple-400/40',
     icon: Server,
     color: 'purple',
-    badge: '🟣 MOCK_API_DOWN',
+    badge: 'MOCK_API_DOWN',
     engineeringExplanation: {
-      title: '🛡️ Circuit Breaker: Gateway ภายนอกขัดข้อง (504 Timeout)',
+      title: 'Circuit Breaker: External Gateway Timeout (504)',
       steps: [
-        '1. Gateway Timeout (HTTP 504) จากระบบตรวจสอบภายนอก',
-        '2. Graceful Fallback: ไม่ปฏิเสธลูกค้า แต่ส่งเข้าคิว Manual Audit',
-        '3. อัปเดตสถานะ: booking.status = MANUAL_REVIEW',
-        '4. อัปเดตสลิป: verification_status = API_ERROR_PENDING_ADMIN'
+        '1. External banking API timeout (HTTP 504 Gateway Timeout)',
+        '2. Graceful Fallback: Enqueued into Manual Audit rather than failing customer',
+        '3. Update status: booking.status = MANUAL_REVIEW',
+        '4. Record slip: verification_status = API_ERROR_PENDING_ADMIN'
       ],
-      result: 'Broadcast SSE: แจ้งเตือนสลิปรอตรวจสอบบนหน้าจอ Admin พร้อมปุ่ม Approve/Reject'
+      result: 'Broadcast SSE: Flags pending audit in Admin Dashboard with 1-click Approve/Reject controls.'
     }
   }
 ]
@@ -114,7 +114,7 @@ async function runScenario(scenario) {
           <ul style="padding-left: 14px; margin: 0; list-style-type: disc;">
             ${scenario.engineeringExplanation.steps.map(s => `<li>${s}</li>`).join('')}
           </ul>
-          <p style="margin-top: 6px; font-weight: 600; color: #059669;">⚡ ${scenario.engineeringExplanation.result}</p>
+          <p style="margin-top: 6px; font-weight: 600; color: #059669;">Architecture: ${scenario.engineeringExplanation.result}</p>
         </div>
       `,
       duration: 6000,
@@ -135,8 +135,8 @@ async function runAutoTour() {
   isAutoTourRunning.value = true
 
   ElNotification({
-    title: '🚀 เริ่มต้น 1-Click Guided Tour',
-    message: 'กำลังจำลอง User Flow จองคอร์ทและตรวจสลิปอัตโนมัติ...',
+    title: 'Starting Guided Auto-Tour',
+    message: 'Simulating user flow: court selection, booking creation, and slip verification...',
     type: 'info',
     duration: 3000
   })
@@ -159,8 +159,8 @@ function resetDemo() {
   bookingStore.fetchAvailability()
   latestArchitectureNote.value = null
   ElNotification({
-    title: 'รีเซ็ตสถานะเรียบร้อย',
-    message: 'พร้อมสำหรับการจำลองรอบใหม่',
+    title: 'Demo State Reset',
+    message: 'Ready for a new simulation session.',
     type: 'info',
     duration: 2000
   })
@@ -175,7 +175,7 @@ function resetDemo() {
         <!-- Title & Badges -->
         <div class="flex items-center space-x-2.5">
           <div class="p-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
-            <Sparkles class="w-4 h-4" />
+            <Terminal class="w-4 h-4" />
           </div>
           <div>
             <div class="flex items-center space-x-2 font-bold text-xs tracking-tight text-white font-heading">
@@ -185,7 +185,7 @@ function resetDemo() {
               </span>
             </div>
             <div class="text-[10px] text-slate-400">
-              กดทดสอบสถานการณ์จริง 4 รูปแบบ (สลิปโอนเงิน & Concurrency):
+              Simulate 4 core payment verification and concurrency test cases:
             </div>
           </div>
         </div>
@@ -196,11 +196,11 @@ function resetDemo() {
           <button
             @click="runAutoTour"
             :disabled="isAutoTourRunning || isTesting"
-            class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 font-bold text-xs transition flex items-center space-x-1.5 active:scale-95 disabled:opacity-50 shadow-xs"
-            title="กดปุ่มเดียว จำลอง Flow ครบตั้งแต่ต้นจนจบ"
+            class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 font-bold text-xs transition flex items-center space-x-1.5 active:scale-95 disabled:opacity-50 shadow-xs cursor-pointer"
+            title="Single click to simulate full end-to-end booking & verification flow"
           >
             <Play class="w-3.5 h-3.5 fill-emerald-400 text-emerald-400" />
-            <span>⚡ 1-Click Guided Tour</span>
+            <span>1-Click Guided Tour</span>
           </button>
 
           <div class="h-5 w-px bg-slate-800 mx-0.5 hidden sm:block"></div>
@@ -213,7 +213,7 @@ function resetDemo() {
               @click="runScenario(sc)"
               :disabled="isTesting || isAutoTourRunning"
               :class="[
-                'px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 active:scale-95 disabled:opacity-50 select-none',
+                'px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 active:scale-95 disabled:opacity-50 select-none cursor-pointer',
                 isTesting && sc.key === scenarios[0].key
                   ? 'bg-slate-800 text-white'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -235,8 +235,8 @@ function resetDemo() {
           <!-- Reset Button -->
           <button
             @click="resetDemo"
-            class="p-1.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 text-xs transition"
-            title="รีเซ็ตเริ่มใหม่"
+            class="p-1.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 text-xs transition cursor-pointer"
+            title="Reset Demo State"
           >
             <RefreshCw class="w-3.5 h-3.5" />
           </button>
@@ -259,10 +259,10 @@ function resetDemo() {
             </span>
           </div>
           <div class="text-[10px] text-emerald-400 font-semibold font-mono">
-            ⚡ {{ latestArchitectureNote.result }}
+            Architecture: {{ latestArchitectureNote.result }}
           </div>
         </div>
-        <button @click="latestArchitectureNote = null" class="text-slate-500 hover:text-slate-300 text-sm ml-2">×</button>
+        <button @click="latestArchitectureNote = null" class="text-slate-500 hover:text-slate-300 text-sm ml-2 cursor-pointer">×</button>
       </div>
     </div>
 
@@ -274,7 +274,7 @@ function resetDemo() {
         <div class="w-full flex items-center justify-between text-[11px] text-slate-400 px-2 pb-1">
           <span class="flex items-center space-x-1.5 font-bold text-emerald-400 font-heading">
             <Smartphone class="w-3.5 h-3.5" />
-            <span>ลูกค้า: LINE LIFF</span>
+            <span>Customer: LINE LIFF</span>
           </span>
           <span class="text-[9px] bg-slate-900 border border-slate-800 text-slate-400 font-mono px-1.5 py-0.2 rounded-full">
             iPhone 16 Pro (380px)
@@ -293,7 +293,7 @@ function resetDemo() {
         <div class="bg-slate-200/90 border-b border-slate-300 px-4 py-1.5 text-xs text-slate-700 font-semibold flex items-center justify-between flex-shrink-0">
           <div class="flex items-center space-x-2">
             <Monitor class="w-3.5 h-3.5 text-slate-800" />
-            <span class="font-heading font-bold">ร้านค้า: Admin Backoffice & Live POS Dashboard</span>
+            <span class="font-heading font-bold">Store: Admin Backoffice & Live POS Dashboard</span>
           </div>
           <div class="flex items-center space-x-2 text-[10px] text-slate-500 font-mono">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>

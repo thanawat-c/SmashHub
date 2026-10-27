@@ -37,9 +37,9 @@ async function toggleCourtStatus(court) {
   try {
     await api.patch(`/admin/courts/${court.court_id}`, { status: newStatus })
     court.status = newStatus
-    showMessage(`อัปเดตคอร์ท ${court.court_number} เป็น ${newStatus} สำเร็จ`)
+    showMessage(`Court ${court.court_number} set to ${newStatus} successfully`)
   } catch (err) {
-    showMessage(err.response?.data?.error || 'เกิดข้อผิดพลาดในการอัปเดตสถานะคอร์ท', true)
+    showMessage(err.response?.data?.error || 'Failed to update court status', true)
   }
 }
 
@@ -48,9 +48,9 @@ async function restockProduct(product, addQty) {
   try {
     const res = await api.post(`/admin/products/${product.id}/restock`, { add_qty: addQty })
     product.stock_qty = res.data.data.stock_qty
-    showMessage(`เติมสต็อก ${product.name} (+${addQty}) สำเร็จ! คงเหลือ ${product.stock_qty} ชิ้น`)
+    showMessage(`Restocked ${product.name} (+${addQty}) successfully! Current stock: ${product.stock_qty}`)
   } catch (err) {
-    showMessage(err.response?.data?.error || 'เกิดข้อผิดพลาดในการเติมสต็อก', true)
+    showMessage(err.response?.data?.error || 'Failed to restock product', true)
   }
 }
 
@@ -83,18 +83,18 @@ function showMessage(msg, isError = false) {
     <div class="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm font-bold">
-            🏸
+          <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center text-xs font-black tracking-tighter">
+            SH
           </div>
           <div>
-            <h2 class="text-sm font-extrabold text-slate-900">จัดการสนาม & ปิดปรับปรุง (Court Maintenance)</h2>
-            <p class="text-xs text-slate-500">เปิด-ปิดสถานะคอร์ท 1-6 เพื่อปิดซ่อมบำรุงหรือเปลี่ยนราคาค่าบริการ</p>
+            <h2 class="text-sm font-extrabold text-slate-900">Court Operations & Maintenance</h2>
+            <p class="text-xs text-slate-500">Toggle active or maintenance mode across Courts 1-6</p>
           </div>
         </div>
         <button
           @click="fetchData"
           class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-          title="รีเฟรชข้อมูล"
+          title="Refresh Data"
         >
           <RefreshCw :class="['w-4 h-4', isLoading ? 'animate-spin' : '']" />
         </button>
@@ -108,7 +108,7 @@ function showMessage(msg, isError = false) {
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <span class="font-extrabold text-sm text-slate-900">คอร์ท {{ court.court_number }}</span>
+              <span class="font-extrabold text-sm text-slate-900">Court {{ court.court_number }}</span>
               <span
                 :class="[
                   'text-[9px] font-bold px-1.5 py-0.2 rounded-md',
@@ -128,13 +128,13 @@ function showMessage(msg, isError = false) {
                   : 'bg-emerald-50 text-emerald-700 border-emerald-200'
               ]"
             >
-              {{ court.status === 'MAINTENANCE' ? '⚠️ ปิดปรับปรุง' : '✅ พร้อมใช้งาน' }}
+              {{ court.status === 'MAINTENANCE' ? 'Maintenance' : 'Active' }}
             </span>
           </div>
 
           <div class="text-xs text-slate-500 flex justify-between font-mono">
-            <span>Normal: ฿{{ court.normal_rate }}/ชม.</span>
-            <span>Peak: ฿{{ court.peak_rate }}/ชม.</span>
+            <span>Normal: ฿{{ court.normal_rate }}/h</span>
+            <span>Peak: ฿{{ court.peak_rate }}/h</span>
           </div>
 
           <!-- Toggle Button -->
@@ -148,7 +148,7 @@ function showMessage(msg, isError = false) {
             ]"
           >
             <Wrench class="w-3.5 h-3.5" />
-            <span>{{ court.status === 'MAINTENANCE' ? 'เปิดให้บริการตามปกติ' : 'สั่งปิดปรับปรุงสนาม (Maintenance)' }}</span>
+            <span>{{ court.status === 'MAINTENANCE' ? 'Set to Active' : 'Set to Maintenance' }}</span>
           </button>
         </div>
       </div>
@@ -162,8 +162,8 @@ function showMessage(msg, isError = false) {
             <Package class="w-4 h-4" />
           </div>
           <div>
-            <h2 class="text-sm font-extrabold text-slate-900">จัดการคลังสินค้ามินิสโตร์ (Product Inventory Restock)</h2>
-            <p class="text-xs text-slate-500">เติมสต็อกสินค้าเครื่องดื่ม ลูกแบดมินตัน และอุปกรณ์เช่าหน้าร้าน</p>
+            <h2 class="text-sm font-extrabold text-slate-900">Pro Shop Inventory Control</h2>
+            <p class="text-xs text-slate-500">Manage on-hand stock for beverages, shuttlecocks, and rental gear</p>
           </div>
         </div>
       </div>
@@ -183,7 +183,7 @@ function showMessage(msg, isError = false) {
                   product.stock_qty <= 5 ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-700'
                 ]"
               >
-                คงเหลือ {{ product.stock_qty }} ชิ้น
+                Stock: {{ product.stock_qty }}
               </span>
             </div>
             <h3 class="text-xs font-bold text-slate-900 line-clamp-1">{{ product.name }}</h3>
@@ -192,7 +192,7 @@ function showMessage(msg, isError = false) {
 
           <!-- Quick Restock Buttons (+5, +10, +24) -->
           <div class="pt-2 border-t border-slate-100">
-            <div class="text-[10px] text-slate-400 font-medium mb-1">เติมสต็อกด่วน</div>
+            <div class="text-[10px] text-slate-400 font-medium mb-1">Quick Restock</div>
             <div class="grid grid-cols-3 gap-1">
               <button
                 @click="restockProduct(product, 5)"

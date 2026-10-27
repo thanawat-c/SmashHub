@@ -67,7 +67,7 @@ async function submitAddItems() {
 <template>
   <el-dialog
     v-model="adminStore.isPOSOpen"
-    title="เพิ่มสินค้าเข้าบิล (POS Counter)"
+    title="Add Items to Order (POS)"
     width="540px"
     destroy-on-close
   >
@@ -79,11 +79,11 @@ async function submitAddItems() {
             {{ adminStore.posTargetBooking.booking_no }}
           </div>
           <div class="text-[11px] text-slate-500">
-            ลูกค้า: {{ adminStore.posTargetBooking.user?.display_name }}
+            Player: {{ adminStore.posTargetBooking.user?.display_name }}
           </div>
         </div>
         <div class="text-right">
-          <div class="text-[10px] text-slate-400">ยอดบิลปัจจุบัน</div>
+          <div class="text-[10px] text-slate-400">Current Total</div>
           <div class="text-sm font-bold text-emerald-700 font-mono">
             ฿{{ adminStore.posTargetBooking.net_total?.toLocaleString() }}
           </div>
@@ -105,7 +105,7 @@ async function submitAddItems() {
             <div>
               <div class="font-semibold text-slate-800 text-xs">{{ product.name }}</div>
               <div class="text-[10px] text-slate-400">
-                ฿{{ product.price }} • คงเหลือ {{ product.stock_qty }} ชิ้น
+                ฿{{ product.price }} • Stock: {{ product.stock_qty }}
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@ async function submitAddItems() {
             <button
               v-if="selectedItems[product.id]"
               @click="decrement(product)"
-              class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold"
+              class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold cursor-pointer"
             >
               -
             </button>
@@ -125,7 +125,7 @@ async function submitAddItems() {
             <button
               @click="increment(product)"
               :disabled="product.stock_qty <= 0"
-              class="w-6 h-6 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 flex items-center justify-center font-bold disabled:opacity-40"
+              class="w-6 h-6 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 flex items-center justify-center font-bold disabled:opacity-40 cursor-pointer"
             >
               +
             </button>
@@ -136,7 +136,7 @@ async function submitAddItems() {
       <!-- POS Bottom Summary & Submit -->
       <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
         <div>
-          <div class="text-[11px] text-slate-500">เพิ่ม {{ selectedCount }} ชิ้น</div>
+          <div class="text-[11px] text-slate-500">Adding {{ selectedCount }} item(s)</div>
           <div class="text-sm font-bold text-emerald-800 font-mono">
             +฿{{ totalAdditionAmount.toLocaleString() }}
           </div>
@@ -145,10 +145,10 @@ async function submitAddItems() {
         <button
           @click="submitAddItems"
           :disabled="selectedCount === 0 || isSubmitting"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow transition flex items-center space-x-1.5 disabled:opacity-40"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow transition flex items-center space-x-1.5 disabled:opacity-40 cursor-pointer"
         >
           <ShoppingCart class="w-4 h-4" />
-          <span>บันทึกและตัดสต็อก</span>
+          <span>Charge & Deduct Stock</span>
         </button>
       </div>
     </div>

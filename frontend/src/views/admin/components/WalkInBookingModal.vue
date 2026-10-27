@@ -13,7 +13,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:visible', 'booking-created'])
 
-const customerName = ref('ลูกค้า Walk-in หน้าร้าน')
+const customerName = ref('Walk-in Customer')
 const customerPhone = ref('080-000-0000')
 const isSubmitting = ref(false)
 
@@ -41,8 +41,8 @@ async function handleCreateWalkIn() {
     })
 
     ElNotification({
-      title: 'เปิดคอร์ทสำเร็จ',
-      message: `เปิดคอร์ท ${props.court.court_number} เวลา ${props.slot.start_hour}:00 น. เรียบร้อยแล้ว`,
+      title: 'Court Booked Successfully',
+      message: `Court ${props.court.court_number} at ${props.slot.start_hour}:00 is confirmed.`,
       type: 'success'
     })
 
@@ -50,8 +50,8 @@ async function handleCreateWalkIn() {
     emit('booking-created')
   } catch (err) {
     ElNotification({
-      title: 'ไม่สามารถเปิดคอร์ทได้',
-      message: err.response?.data?.error || 'เกิดข้อผิดพลาด',
+      title: 'Booking Failed',
+      message: err.response?.data?.error || 'An error occurred',
       type: 'error'
     })
   } finally {
@@ -64,46 +64,46 @@ async function handleCreateWalkIn() {
   <el-dialog
     :model-value="visible"
     @update:model-value="emit('update:visible', $event)"
-    title="เปิดคอร์ทรับลูกค้า Walk-in หน้าร้าน"
+    title="Walk-in Booking"
     width="440px"
     destroy-on-close
   >
     <div v-if="court && slot" class="space-y-3.5 text-xs">
       <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex justify-between items-center text-emerald-900">
         <div>
-          <div class="font-bold text-sm">คอร์ท {{ court.court_number }} ({{ court.court_type }})</div>
-          <div class="text-xs text-emerald-700">เวลา: {{ slot.start_hour }}:00 - {{ slot.end_hour }}:00 น.</div>
+          <div class="font-bold text-sm">Court {{ court.court_number }} ({{ court.court_type }})</div>
+          <div class="text-xs text-emerald-700">Time: {{ slot.start_hour }}:00 - {{ slot.end_hour }}:00</div>
         </div>
         <div class="text-right">
-          <div class="text-[10px] text-emerald-600">ค่าคอร์ท</div>
+          <div class="text-[10px] text-emerald-600">Rate</div>
           <div class="font-mono font-bold text-base text-emerald-800">฿{{ slot.hourly_rate }}</div>
         </div>
       </div>
 
       <div>
-        <label class="block text-[11px] font-semibold text-slate-700 mb-1">ชื่อลูกค้า / ก๊วน</label>
-        <el-input v-model="customerName" placeholder="ระบุชื่อลูกค้าหรือชื่อก๊วน" size="default" />
+        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Player / Group Name</label>
+        <el-input v-model="customerName" placeholder="Enter player or group name" size="default" />
       </div>
 
       <div>
-        <label class="block text-[11px] font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์</label>
+        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Phone Number</label>
         <el-input v-model="customerPhone" placeholder="08x-xxx-xxxx" size="default" />
       </div>
 
       <div class="pt-2 flex justify-end space-x-2">
         <button
           @click="emit('update:visible', false)"
-          class="px-3 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+          class="px-3 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 font-medium cursor-pointer"
         >
-          ยกเลิก
+          Cancel
         </button>
         <button
           @click="handleCreateWalkIn"
           :disabled="isSubmitting"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow flex items-center space-x-1.5 transition disabled:opacity-50"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow flex items-center space-x-1.5 transition disabled:opacity-50 cursor-pointer"
         >
           <UserPlus class="w-4 h-4" />
-          <span>บันทึกเปิดคอร์ททันที</span>
+          <span>Confirm Walk-in</span>
         </button>
       </div>
     </div>

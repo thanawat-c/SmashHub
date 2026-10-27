@@ -46,7 +46,7 @@ export const useBookingStore = defineStore('booking', () => {
       const res = await api.get(`/courts/availability?date=${selectedDate.value}`)
       courts.value = res.data.courts || []
     } catch (err) {
-      errorMessage.value = err.response?.data?.error || 'ไม่สามารถโหลดข้อมูลคอร์ทได้'
+      errorMessage.value = err.response?.data?.error || 'Failed to load court availability'
     } finally {
       isLoading.value = false
     }
@@ -115,7 +115,7 @@ export const useBookingStore = defineStore('booking', () => {
 
   async function submitBooking(customerProfile) {
     if (selectedSlots.value.length === 0) {
-      errorMessage.value = 'กรุณาเลือกอย่างน้อย 1 ช่วงเวลาคอร์ท'
+      errorMessage.value = 'Please select at least 1 court time slot'
       return false
     }
 
@@ -123,7 +123,7 @@ export const useBookingStore = defineStore('booking', () => {
     errorMessage.value = ''
 
     const payload = {
-      customer_name: customerProfile?.displayName || customerProfile?.display_name || 'ลูกค้าทั่วไป',
+      customer_name: customerProfile?.displayName || customerProfile?.display_name || 'Guest Player',
       customer_phone: customerProfile?.phone || '089-111-2233',
       line_user_id: customerProfile?.lineUserId || customerProfile?.line_user_id,
       play_date: selectedDate.value,
@@ -143,7 +143,7 @@ export const useBookingStore = defineStore('booking', () => {
       currentStep.value = 3 // Move to payment step
       return true
     } catch (err) {
-      errorMessage.value = err.response?.data?.error || 'เกิดข้อผิดพลาดในการสร้างการจอง'
+      errorMessage.value = err.response?.data?.error || 'Failed to create booking'
       return false
     } finally {
       isSubmitting.value = false
@@ -224,7 +224,7 @@ export const useBookingStore = defineStore('booking', () => {
     } catch (err) {
       const detail = err.response?.data?.details || err.response?.data
       slipResult.value = detail
-      errorMessage.value = err.response?.data?.error || 'การตรวจสอบสลิปไม่ผ่าน'
+      errorMessage.value = err.response?.data?.error || 'Payment slip verification failed'
       return detail
     } finally {
       isSubmitting.value = false
@@ -287,7 +287,7 @@ export const useBookingStore = defineStore('booking', () => {
     isMyBookingsOpen.value = false
   }
 
-  async function cancelBooking(bookingId, reason = 'ลูกค้ายกเลิกการจอง') {
+  async function cancelBooking(bookingId, reason = 'Cancelled by customer') {
     try {
       const res = await api.post(`/bookings/${bookingId}/cancel`, { reason })
       // Update in local myBookings list
@@ -302,7 +302,7 @@ export const useBookingStore = defineStore('booking', () => {
       await fetchAvailability()
       return { success: true, data: res.data.data }
     } catch (err) {
-      const msg = err.response?.data?.error || 'ไม่สามารถยกเลิกการจองได้'
+      const msg = err.response?.data?.error || 'Failed to cancel booking'
       return { success: false, error: msg }
     }
   }

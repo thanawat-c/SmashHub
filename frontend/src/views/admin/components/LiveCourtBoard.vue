@@ -4,7 +4,7 @@ import { useAdminStore } from '@/stores/adminStore'
 import api from '@/api'
 import WalkInBookingModal from './WalkInBookingModal.vue'
 import {
-  Calendar, Clock, CheckCircle2, ShoppingCart, UserCheck, Plus, Eye, Printer, AlertCircle, Sparkles
+  Calendar, Clock, CheckCircle2, ShoppingCart, UserCheck, Plus, Eye, Printer, AlertCircle
 } from 'lucide-vue-next'
 
 const adminStore = useAdminStore()
@@ -85,38 +85,38 @@ async function onFastAddWater(booking, e) {
       <div class="flex items-center space-x-3">
         <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-800">
           <Calendar class="w-4 h-4 text-emerald-600" />
-          <span>วันที่:</span>
+          <span>Date:</span>
         </div>
         <el-date-picker
           v-model="adminStore.filterDate"
           type="date"
           value-format="YYYY-MM-DD"
           size="small"
-          placeholder="เลือกวันที่"
+          placeholder="Select Date"
           @change="fetchBoard"
           class="!w-36"
         />
         <button
           @click="fetchBoard"
-          class="px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition font-medium"
+          class="px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition font-medium cursor-pointer"
         >
-          รีเฟรช
+          Refresh
         </button>
       </div>
 
       <!-- Live Court Color Legend -->
       <div class="flex items-center space-x-3 text-xs">
-        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-white border border-slate-300"></span><span class="text-slate-600">ว่าง (คลิกเปิด Walk-in)</span></span>
-        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span><span class="text-slate-600">ยืนยันแล้ว</span></span>
-        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span><span class="text-slate-600">รอโอน (10 นาที)</span></span>
-        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-purple-500"></span><span class="text-slate-600">รอตรวจสลิป</span></span>
+        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-white border border-slate-300"></span><span class="text-slate-600">Available (Walk-in)</span></span>
+        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span><span class="text-slate-600">Confirmed</span></span>
+        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span><span class="text-slate-600">Held (10m)</span></span>
+        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-purple-500"></span><span class="text-slate-600">Under Review</span></span>
       </div>
     </div>
 
     <!-- Live Court Matrix Container -->
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-x-auto p-4 relative">
       <div v-if="isLoading" class="py-24 text-center text-slate-400 text-xs">
-        กำลังโหลดกระดานสด...
+        Loading live court schedule...
       </div>
 
       <div v-else-if="availability" class="min-w-[880px] relative">
@@ -130,7 +130,7 @@ async function onFastAddWater(booking, e) {
             :key="court.court_id"
             class="bg-slate-50 border border-slate-200 rounded-xl p-2 text-center"
           >
-            <div class="font-black text-slate-900 text-xs">คอร์ท {{ court.court_number }}</div>
+            <div class="font-black text-slate-900 text-xs">Court {{ court.court_number }}</div>
             <div class="text-[9px] text-emerald-700 font-semibold truncate">
               {{ court.court_type === 'ACRYLIC' ? 'Acrylic VIP' : 'PVC Mat' }}
             </div>
@@ -160,7 +160,7 @@ async function onFastAddWater(booking, e) {
             <div class="flex flex-col justify-center items-center text-slate-600 font-mono text-xs">
               <span class="font-bold">{{ String(hour).padStart(2, '0') }}:00</span>
               <span :class="['text-[8px]', hour >= 17 ? 'text-amber-600 font-bold' : 'text-slate-400']">
-                {{ hour >= 17 ? 'Peak' : 'ปกติ' }}
+                {{ hour >= 17 ? 'Peak' : 'Off-peak' }}
               </span>
             </div>
 
@@ -177,12 +177,12 @@ async function onFastAddWater(booking, e) {
                   class="h-14 rounded-xl border border-dashed border-slate-300 hover:border-emerald-500 hover:bg-emerald-50/40 cursor-pointer p-2 flex flex-col justify-between transition group"
                 >
                   <div class="flex justify-between items-center text-[10px] text-slate-400 group-hover:text-emerald-700">
-                    <span>ว่าง</span>
+                    <span>Open</span>
                     <span class="font-mono">{{ slot.hourly_rate }}฿</span>
                   </div>
                   <div class="text-[9px] text-emerald-600 font-semibold opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition">
                     <Plus class="w-3 h-3" />
-                    <span>เปิด Walk-in</span>
+                    <span>Walk-in</span>
                   </div>
                 </div>
 
@@ -201,7 +201,7 @@ async function onFastAddWater(booking, e) {
                 >
                   <div class="flex justify-between items-start">
                     <div class="font-bold text-[11px] truncate flex items-center space-x-1">
-                      <span class="truncate">{{ getSlotBooking(slot)?.user?.display_name || slot.booking_no || 'จองแล้ว' }}</span>
+                      <span class="truncate">{{ getSlotBooking(slot)?.user?.display_name || slot.booking_no || 'Booked' }}</span>
                     </div>
                     <span
                       :class="[
@@ -209,7 +209,7 @@ async function onFastAddWater(booking, e) {
                         slot.status === 'LOCKED_PENDING' ? 'bg-amber-200 text-amber-900' : 'bg-emerald-200 text-emerald-900'
                       ]"
                     >
-                      {{ slot.status === 'LOCKED_PENDING' ? 'รอโอน' : 'ยืนยัน' }}
+                      {{ slot.status === 'LOCKED_PENDING' ? 'Held' : 'Confirmed' }}
                     </span>
                   </div>
 
@@ -224,30 +224,30 @@ async function onFastAddWater(booking, e) {
                       <button
                         @click="onQuickCheckIn(getSlotBooking(slot), $event)"
                         :class="[
-                          'px-1.5 py-0.5 rounded text-[9px] font-bold transition flex items-center space-x-0.5',
+                          'px-1.5 py-0.5 rounded text-[9px] font-bold transition flex items-center space-x-0.5 cursor-pointer',
                           getSlotBooking(slot).check_in_status === 'WAITING'
                             ? 'bg-blue-600 text-white hover:bg-blue-700'
                             : 'bg-emerald-600 text-white'
                         ]"
                       >
                         <UserCheck class="w-2.5 h-2.5" />
-                        <span>{{ getSlotBooking(slot).check_in_status === 'WAITING' ? 'Check-in' : 'เข้าแล้ว' }}</span>
+                        <span>{{ getSlotBooking(slot).check_in_status === 'WAITING' ? 'Check-in' : 'Active' }}</span>
                       </button>
 
                       <!-- Quick Add Water (+15฿) -->
                       <button
                         @click="onFastAddWater(getSlotBooking(slot), $event)"
-                        title="เพิ่มน้ำดื่มสิงห์ด่วน 1 ขวด"
-                        class="px-1 py-0.5 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded font-semibold text-[8px]"
+                        title="Quick Add Singha Water"
+                        class="px-1.5 py-0.5 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded font-bold text-[8px] cursor-pointer"
                       >
-                        +🥤
+                        +Water
                       </button>
 
                       <!-- POS Modal -->
                       <button
                         @click="onQuickPOS(getSlotBooking(slot), $event)"
-                        title="เปิดเคาน์เตอร์ POS"
-                        class="p-1 bg-amber-500 hover:bg-amber-600 text-white rounded transition"
+                        title="Open POS Add-ons"
+                        class="p-1 bg-amber-500 hover:bg-amber-600 text-white rounded transition cursor-pointer"
                       >
                         <ShoppingCart class="w-2.5 h-2.5" />
                       </button>
@@ -255,8 +255,8 @@ async function onFastAddWater(booking, e) {
                       <!-- Receipt Print -->
                       <button
                         @click="onQuickReceipt(getSlotBooking(slot), $event)"
-                        title="พิมพ์ใบเสร็จ"
-                        class="p-1 bg-slate-700 hover:bg-slate-800 text-white rounded transition"
+                        title="Print Receipt"
+                        class="p-1 bg-slate-700 hover:bg-slate-800 text-white rounded transition cursor-pointer"
                       >
                         <Printer class="w-2.5 h-2.5" />
                       </button>
