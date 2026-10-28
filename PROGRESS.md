@@ -130,6 +130,13 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **Active Cart Card Highlighting**: When an item has `qty > 0`, card highlights with emerald border and ring (`border-emerald-500 ring-1 ring-emerald-500/30 bg-emerald-50/15`).
     - **Interactive Bottom Sheet ("Your Selection Overview")**: Tapping cart badge or total opens full itemized drawer showing courts breakdown, add-on products with live stepper, and transparent price calculation.
     - **Database Reseed**: Updated active database with 100% English titles and verified CDN image URLs.
+- [x] **Phase 17: Desktop 2-Column Responsive Layout & Sticky Booking Summary** (Completed)
+  - **Task 17 (`a0f8e71`)**:
+    - **Adaptive Desktop Canvas (`LiffView.vue`)**: Replaced fixed 430px container with responsive container (`max-w-6xl` / `max-w-7xl` on `lg:` screens) with rounded corners and border.
+    - **Sticky Desktop Order Summary (`DesktopOrderSummary.vue`)**: Implemented persistent right sidebar (380-420px) displaying real-time booked courts schedule, equipment add-ons, pricing breakdown with VAT, step-specific CTA button, and atomic lock guarantees.
+    - **Pro-Shop 2-Column Product Catalog (`MiniStoreStep.vue`)**: Updated products layout to `grid grid-cols-1 md:grid-cols-2` on desktop for optimal browsing.
+    - **Smart Mobile/Desktop Floating Bar Deduplication**: Added `lg:hidden` to floating mobile bottom docks so desktop users enjoy a clean canvas powered entirely by the sticky summary sidebar without duplication.
+
 
 
 
