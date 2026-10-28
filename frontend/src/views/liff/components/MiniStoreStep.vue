@@ -128,9 +128,9 @@ async function onProceedToPayment() {
     </div>
 
     <!-- Main Content Area: Scrollable -->
-    <div class="flex-1 overflow-y-auto p-3 pb-32 space-y-3">
-      <!-- 1. Selected Booking Schedule Banner (Solves "ดูรายการที่เราเลือกไม่ค่อยรู้เรื่อง") -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 p-3 shadow-2xs">
+    <div class="flex-1 overflow-y-auto p-3 pb-32 lg:pb-8 space-y-3">
+      <!-- 1. Selected Booking Schedule Banner (Shown on mobile, desktop uses sticky sidebar) -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-3 shadow-2xs lg:hidden">
         <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
           <div class="flex items-center space-x-1.5">
             <div class="w-5 h-5 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
@@ -187,8 +187,8 @@ async function onProceedToPayment() {
         <span class="text-[10px] text-slate-400 font-mono">{{ filteredProducts.length }} items</span>
       </div>
 
-      <!-- 2. Modern Product Cards Grid -->
-      <div class="space-y-2">
+      <!-- 2. Modern Product Cards Grid (1 col on mobile, 2 cols on tablet/desktop) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
         <div
           v-for="product in filteredProducts"
           :key="product.id"
@@ -302,8 +302,8 @@ async function onProceedToPayment() {
       </div>
     </div>
 
-    <!-- 3. Floating Bottom Checkout Dock with Expandable Cart Details -->
-    <div class="absolute bottom-2 left-2 right-2 z-20">
+    <!-- 3. Floating Bottom Checkout Dock with Expandable Cart Details (Hidden on Desktop where Sidebar handles checkout) -->
+    <div class="absolute bottom-2 left-2 right-2 z-20 lg:hidden">
       <div class="bg-white/95 backdrop-blur-md text-slate-900 p-3 rounded-2xl shadow-xl border border-slate-200">
         <!-- Collapsed Bar Info: Tappable to View Details -->
         <div

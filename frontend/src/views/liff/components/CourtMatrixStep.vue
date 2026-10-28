@@ -202,7 +202,7 @@ function getAvailableCountForCourt(court) {
     </div>
 
     <!-- Active Court Schedule Timeline (MATCHi / Playtomic Slot Grid) -->
-    <div class="flex-1 overflow-y-auto p-3.5 pb-28">
+    <div class="flex-1 overflow-y-auto p-3.5 pb-28 lg:pb-6">
       <div v-if="bookingStore.isLoading" class="flex flex-col items-center justify-center py-20 space-y-2 text-slate-400">
         <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
         <span class="text-xs">Loading availability...</span>
@@ -312,8 +312,8 @@ function getAvailableCountForCourt(court) {
       </div>
     </div>
 
-    <!-- Floating Bottom Checkout Dock (Playtomic / Clean Mobile Checkout Bar) -->
-    <div class="absolute bottom-2 left-2 right-2 z-20">
+    <!-- Floating Bottom Checkout Dock (Playtomic / Clean Mobile Checkout Bar - Hidden on Desktop where Sidebar handles checkout) -->
+    <div class="absolute bottom-2 left-2 right-2 z-20 lg:hidden">
       <div class="bg-white/95 backdrop-blur-md text-slate-900 p-3 rounded-2xl shadow-xl border border-slate-200/90">
         <div class="flex items-center justify-between">
           <div>
