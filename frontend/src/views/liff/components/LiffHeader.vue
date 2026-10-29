@@ -83,6 +83,13 @@ function handleBack() {
           <ChevronDown class="w-3 h-3 text-slate-500" />
         </button>
 
+        <!-- Backdrop to close dropdown when clicking outside -->
+        <div
+          v-if="showDropdown"
+          class="fixed inset-0 z-40 bg-transparent cursor-default"
+          @click="showDropdown = false"
+        ></div>
+
         <!-- Dropdown Popover (Clean Authentic App Menu) -->
         <div
           v-if="showDropdown"

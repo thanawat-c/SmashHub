@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import QRCode from 'qrcode'
 import { useBookingStore } from '@/stores/bookingStore'
 import {
   Timer, Upload, CheckCircle2, XCircle, AlertTriangle,
@@ -13,7 +14,69 @@ const bookingStore = useBookingStore()
 const remainingSeconds = ref(600)
 let timerInterval = null
 
+const qrDataUrl = ref('')
+
+function crc16(data) {
+  let crc = 0xFFFF
+  for (let i = 0; i < data.length; i++) {
+    crc ^= data.charCodeAt(i) << 8
+    for (let j = 0; j < 8; j++) {
+      if ((crc & 0x8000) !== 0) {
+        crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+      } else {
+        crc = (crc << 1) & 0xFFFF
+      }
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, '0')
+}
+
+function generatePromptPayPayload(phoneNumber, amount) {
+  const cleaned = phoneNumber.replace(/[^0-9]/g, '')
+  const formattedPhone = cleaned.startsWith('0') ? '0066' + cleaned.substring(1) : cleaned
+  const phoneTag = '0113' + formattedPhone
+  const merchantInfo = '0016A000000677010111' + phoneTag
+  const tag29 = '29' + String(merchantInfo.length).padStart(2, '0') + merchantInfo
+  const formattedAmount = Number(amount || 0).toFixed(2)
+  const tag54 = '54' + String(formattedAmount.length).padStart(2, '0') + formattedAmount
+  const raw = '000201010212' + tag29 + '5303764' + tag54 + '5802TH6304'
+  return raw + crc16(raw)
+}
+
+async function renderQRCode() {
+  const amount = bookingStore.activeBooking?.booking?.net_total || bookingStore.netTotal || 150
+  let payload = bookingStore.activeBooking?.promptpay_qr
+  if (!payload || payload.startsWith('http') || payload === 'smashhub') {
+    payload = generatePromptPayPayload('0987654321', amount)
+  }
+  try {
+    qrDataUrl.value = await QRCode.toDataURL(payload, {
+      width: 320,
+      margin: 1,
+      color: {
+        dark: '#0f172a',
+        light: '#ffffff'
+      }
+    })
+  } catch (err) {
+    console.error('Failed to generate local PromptPay QR:', err)
+  }
+}
+
+function downloadQR() {
+  if (!qrDataUrl.value) return
+  const a = document.createElement('a')
+  a.href = qrDataUrl.value
+  a.download = `PromptPay-SmashHub-${bookingStore.activeBooking?.booking?.booking_no || 'BK'}.png`
+  a.click()
+}
+
+watch(() => bookingStore.activeBooking, () => {
+  renderQRCode()
+}, { deep: true })
+
 onMounted(() => {
+  renderQRCode()
   if (bookingStore.activeBooking?.booking?.expires_at) {
     const expires = new Date(bookingStore.activeBooking.booking.expires_at).getTime()
     updateRemaining(expires)
@@ -120,7 +183,7 @@ const showTesterPanel = ref(false)
           class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100"
         >
           <div class="flex items-center space-x-1.5">
-            <span class="font-extrabold text-slate-900">Court {{ court.court?.court_number || court.courtNumber }}</span>
+            <span class="font-extrabold text-slate-900">Court {{ court.court?.court_number || court.court_number || court.courtNumber || court.court_id || court.courtId || 1 }}</span>
             <span class="text-[10px] text-slate-500 font-mono">({{ court.start_hour || court.startHour }}:00 - {{ (court.start_hour || court.startHour) + 1 }}:00)</span>
           </div>
           <span class="font-bold font-mono text-slate-900">฿{{ court.hourly_rate || court.rate || 150 }}</span>
@@ -170,12 +233,27 @@ const showTesterPanel = ref(false)
         </div>
 
         <!-- High-Contrast QR Code -->
-        <div class="inline-block p-2 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+        <div class="inline-block p-2.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
           <img
-            :src="`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(bookingStore.activeBooking?.promptpay_qr || 'smashhub')}`"
+            v-if="qrDataUrl"
+            :src="qrDataUrl"
             alt="PromptPay QR Code"
-            class="w-36 h-36 object-contain mx-auto"
+            class="w-44 h-44 object-contain mx-auto"
           />
+          <div v-else class="w-44 h-44 flex items-center justify-center bg-slate-50 text-slate-400 text-xs font-mono">
+            Generating PromptPay QR...
+          </div>
+        </div>
+
+        <!-- Save/Download QR button -->
+        <div class="mt-2 flex items-center justify-center">
+          <button
+            @click="downloadQR"
+            class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold transition cursor-pointer"
+          >
+            <Download class="w-3 h-3 text-slate-500" />
+            <span>Save QR Image</span>
+          </button>
         </div>
 
         <!-- Bank & Account Information -->

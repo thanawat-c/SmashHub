@@ -332,10 +332,15 @@ func (s *BookingService) CreateBooking(req CreateBookingRequest) (*BookingRespon
 			}
 		}
 
-		booking.Courts = bookingCourts
-		booking.Items = bookingItems
-		booking.User = &user
-		createdBooking = &booking
+		var completeBooking models.Booking
+		if err := tx.Preload("User").Preload("Courts.Court").Preload("Items.Product").First(&completeBooking, "id = ?", booking.ID).Error; err == nil {
+			createdBooking = &completeBooking
+		} else {
+			booking.Courts = bookingCourts
+			booking.Items = bookingItems
+			booking.User = &user
+			createdBooking = &booking
+		}
 
 		return nil
 	})
