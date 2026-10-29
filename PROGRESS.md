@@ -136,6 +136,7 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **Sticky Desktop Order Summary (`DesktopOrderSummary.vue`)**: Implemented persistent right sidebar (380-420px) displaying real-time booked courts schedule, equipment add-ons, pricing breakdown with VAT, step-specific CTA button, and atomic lock guarantees.
     - **Pro-Shop 2-Column Product Catalog (`MiniStoreStep.vue`)**: Updated products layout to `grid grid-cols-1 md:grid-cols-2` on desktop for optimal browsing.
     - **Smart Mobile/Desktop Floating Bar Deduplication**: Added `lg:hidden` to floating mobile bottom docks so desktop users enjoy a clean canvas powered entirely by the sticky summary sidebar without duplication.
+    - **Desktop Modal Redundancy Elimination (`a86dc15`)**: Hid the mobile `Cart` header button and `Your Selection Overview` popup modal on desktop (`lg:hidden`) so the wide desktop view never shows duplicate summary popups over the product catalog.
 
 
 
