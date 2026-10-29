@@ -137,6 +137,12 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **Pro-Shop 2-Column Product Catalog (`MiniStoreStep.vue`)**: Updated products layout to `grid grid-cols-1 md:grid-cols-2` on desktop for optimal browsing.
     - **Smart Mobile/Desktop Floating Bar Deduplication**: Added `lg:hidden` to floating mobile bottom docks so desktop users enjoy a clean canvas powered entirely by the sticky summary sidebar without duplication.
     - **Desktop Modal Redundancy Elimination (`a86dc15`)**: Hid the mobile `Cart` header button and `Your Selection Overview` popup modal on desktop (`lg:hidden`) so the wide desktop view never shows duplicate summary popups over the product catalog.
+- [x] **Phase 18: Profile Dropdown Click-Outside & Local EMVCo PromptPay QR Upgrade** (Completed)
+  - **Task 18 (`a2d55ca`)**:
+    - **Dropdown Click-Outside Dismissal (`LiffHeader.vue`)**: Added full-screen transparent backdrop overlay (`fixed inset-0 z-40 bg-transparent cursor-default`) so tapping or clicking anywhere outside the customer account menu automatically dismisses the popover.
+    - **Local EMVCo PromptPay QR Code Generation (`PaymentStep.vue`, `promptpay.go`)**: Replaced unreliable third-party HTTP QR image endpoint with high-definition, offline client-side QR renderer using `qrcode` library; implemented official Thai EMVCo QR payload generator with CRC-16/CCITT-FALSE checksum matching Thai banking standards (K PLUS, SCB EASY, Krungthai NEXT).
+    - **Court Number Display Fix (`PaymentStep.vue`, `booking_service.go`)**: Preloaded `Courts.Court` and `Items.Product` upon booking creation and added robust fallback hierarchy (`court.court?.court_number || court.court_number || court.courtNumber || court.court_id || 1`) preventing blank court labels in payment order summaries.
+    - **Save/Download QR Action (`PaymentStep.vue`)**: Added 1-click "Save QR Image" button allowing mobile/desktop users to save the payment QR image directly to their device for photo scanning.
 
 
 
