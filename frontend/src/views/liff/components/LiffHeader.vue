@@ -4,7 +4,8 @@ import { useLineProfileStore } from '@/stores/lineProfile'
 import { useBookingStore } from '@/stores/bookingStore'
 import { useAuthStore } from '@/stores/authStore'
 import {
-  ChevronDown, Check, ShieldCheck, ChevronLeft, User, RotateCcw, LogIn, LogOut
+  ChevronDown, Check, ShieldCheck, ChevronLeft, User, RotateCcw, LogIn, LogOut,
+  ClipboardList
 } from 'lucide-vue-next'
 
 const profileStore = useLineProfileStore()

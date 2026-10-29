@@ -134,7 +134,7 @@ const showTesterPanel = ref(false)
 </script>
 
 <template>
-  <div class="flex flex-col h-full bg-[#F8FAFC] overflow-y-auto p-3 space-y-3 pb-10">
+  <div class="h-full overflow-y-auto bg-[#F8FAFC] p-3.5 sm:p-4 lg:p-5 space-y-3.5 pb-28 select-none">
     <!-- Timer & Booking Reference Header -->
     <div
       :class="[
@@ -167,8 +167,8 @@ const showTesterPanel = ref(false)
       </div>
     </div>
 
-    <!-- Booking Summary & Item Breakdown Card -->
-    <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs space-y-2.5">
+    <!-- Booking Summary & Item Breakdown Card (Mobile only - Desktop uses sticky sidebar) -->
+    <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs space-y-2.5 lg:hidden">
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <span class="text-xs font-bold text-slate-900">Order Summary</span>
         <span class="text-[10px] font-mono text-slate-400">Date: {{ bookingStore.selectedDate }}</span>
@@ -212,204 +212,210 @@ const showTesterPanel = ref(false)
       </div>
     </div>
 
-    <!-- Official Thai QR Payment Standard Card -->
-    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-      <!-- Thai QR Payment Blue Bar -->
-      <div class="bg-[#003B64] text-white px-4 py-2.5 flex items-center justify-between">
-        <div class="flex items-center space-x-1.5 text-xs font-black tracking-wide">
-          <span class="bg-white text-[#003B64] px-1 rounded-xs text-[10px] font-bold">THAI QR</span>
-          <span>PAYMENT</span>
-        </div>
-        <span class="text-[10px] text-slate-200 font-medium">Scan via any banking app</span>
-      </div>
-
-      <div class="p-4 text-center">
-        <!-- Amount To Pay -->
-        <div class="mb-3">
-          <div class="text-[10px] text-slate-500 font-medium">Amount Due</div>
-          <div class="text-2xl font-black text-slate-900 font-mono tracking-tight mt-0.5">
-            ฿{{ (bookingStore.activeBooking?.booking?.net_total || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+    <!-- Main Payment Area: Responsive 2-Column Grid on Desktop, Clean Stack on Mobile -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 items-start">
+      <!-- Column 1: Official Thai QR Payment Standard Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <!-- Thai QR Payment Blue Bar -->
+        <div class="bg-[#003B64] text-white px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-1.5 text-xs font-black tracking-wide">
+            <span class="bg-white text-[#003B64] px-1.5 py-0.2 rounded text-[10px] font-black tracking-tight">THAI QR</span>
+            <span>PAYMENT</span>
           </div>
+          <span class="text-[10px] text-slate-200 font-medium">Scan via any banking app</span>
         </div>
 
-        <!-- High-Contrast QR Code -->
-        <div class="inline-block p-2.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-          <img
-            v-if="qrDataUrl"
-            :src="qrDataUrl"
-            alt="PromptPay QR Code"
-            class="w-44 h-44 object-contain mx-auto"
-          />
-          <div v-else class="w-44 h-44 flex items-center justify-center bg-slate-50 text-slate-400 text-xs font-mono">
-            Generating PromptPay QR...
-          </div>
-        </div>
-
-        <!-- Save/Download QR button -->
-        <div class="mt-2 flex items-center justify-center">
-          <button
-            @click="downloadQR"
-            class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold transition cursor-pointer"
-          >
-            <Download class="w-3 h-3 text-slate-500" />
-            <span>Save QR Image</span>
-          </button>
-        </div>
-
-        <!-- Bank & Account Information -->
-        <div class="mt-3 bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-left flex items-center justify-between">
-          <div>
-            <div class="text-[10px] text-slate-500 font-medium">Account: SmashHub Badminton Co., Ltd.</div>
-            <div class="text-xs font-bold font-mono text-slate-800 mt-0.5">
-              PromptPay: 098-7-65432-1
+        <div class="p-4 text-center">
+          <!-- Amount To Pay -->
+          <div class="mb-3">
+            <div class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Amount Due</div>
+            <div class="text-2xl font-black text-slate-900 font-mono tracking-tight mt-0.5">
+              ฿{{ (bookingStore.activeBooking?.booking?.net_total || bookingStore.netTotal || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
             </div>
           </div>
 
-          <button
-            @click="copyAccount"
-            :class="[
-              'px-2.5 py-1 rounded-lg text-[10px] font-semibold transition flex items-center space-x-1 border shadow-2xs cursor-pointer',
-              isCopied
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            ]"
-          >
-            <Check v-if="isCopied" class="w-3 h-3 text-white" />
-            <Copy v-else class="w-3 h-3 text-slate-500" />
-            <span>{{ isCopied ? 'Copied' : 'Copy' }}</span>
-          </button>
+          <!-- High-Contrast Square QR Code -->
+          <div class="inline-block p-3 bg-white rounded-2xl border border-slate-200 shadow-sm mx-auto">
+            <img
+              v-if="qrDataUrl"
+              :src="qrDataUrl"
+              alt="PromptPay QR Code"
+              class="w-48 h-48 sm:w-52 sm:h-52 aspect-square object-contain mx-auto block shrink-0"
+            />
+            <div v-else class="w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center bg-slate-50 text-slate-400 text-xs font-mono">
+              Generating PromptPay QR...
+            </div>
+          </div>
+
+          <!-- Save/Download QR button -->
+          <div class="mt-2.5 flex items-center justify-center">
+            <button
+              @click="downloadQR"
+              class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-[11px] font-semibold transition cursor-pointer"
+            >
+              <Download class="w-3.5 h-3.5 text-slate-500" />
+              <span>Save QR Image</span>
+            </button>
+          </div>
+
+          <!-- Bank & Account Information -->
+          <div class="mt-3.5 bg-slate-50 border border-slate-100 rounded-xl p-3 text-left flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-slate-500 font-medium">Account: SmashHub Badminton Co., Ltd.</div>
+              <div class="text-xs font-bold font-mono text-slate-800 mt-0.5">
+                PromptPay: 098-7-65432-1
+              </div>
+            </div>
+
+            <button
+              @click="copyAccount"
+              :class="[
+                'px-2.5 py-1 rounded-lg text-[10px] font-semibold transition flex items-center space-x-1 border shadow-2xs cursor-pointer',
+                isCopied
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+              ]"
+            >
+              <Check v-if="isCopied" class="w-3 h-3 text-white" />
+              <Copy v-else class="w-3 h-3 text-slate-500" />
+              <span>{{ isCopied ? 'Copied' : 'Copy' }}</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Slip Upload Section -->
-    <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-xs">
-      <div class="flex items-center justify-between mb-2">
-        <div class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
-          <Upload class="w-3.5 h-3.5 text-emerald-600" />
-          <span>Upload Payment Slip</span>
-        </div>
-        <span class="text-[10px] text-slate-400">JPG, PNG</span>
-      </div>
-
-      <!-- File Upload Drop Box -->
-      <label class="block cursor-pointer">
-        <div class="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-3 text-center bg-slate-50/70 hover:bg-emerald-50/30 transition">
-          <div v-if="previewImage" class="space-y-1.5">
-            <img :src="previewImage" class="w-20 h-28 object-cover mx-auto rounded-lg shadow-xs border border-slate-200" />
-            <div class="text-[11px] text-emerald-700 font-semibold">Tap to change slip image</div>
+      <!-- Column 2: Slip Upload Section & Exception Testing Sandbox -->
+      <div class="space-y-3.5">
+        <!-- Slip Upload Section -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+              <Upload class="w-3.5 h-3.5 text-emerald-600" />
+              <span>Upload Payment Slip</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">JPG, PNG</span>
           </div>
-          <div v-else class="space-y-1 py-2">
-            <ImageIcon class="w-6 h-6 text-slate-400 mx-auto" />
-            <div class="text-xs text-slate-700 font-semibold">Tap to upload transfer slip</div>
-            <div class="text-[9px] text-slate-400">Automated OCR and bank transaction verification</div>
-          </div>
-        </div>
-        <input type="file" accept="image/*" class="hidden" @change="onFileSelected" />
-      </label>
 
-      <!-- Submit File Button -->
-      <button
-        v-if="selectedFile"
-        @click="triggerVerification('MOCK_VALID')"
-        :disabled="bookingStore.isSubmitting"
-        class="w-full mt-2.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
-      >
-        <span v-if="bookingStore.isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        <span>Submit Slip for Verification</span>
-      </button>
+          <!-- File Upload Drop Box -->
+          <label class="block cursor-pointer">
+            <div class="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-4 text-center bg-slate-50/70 hover:bg-emerald-50/30 transition">
+              <div v-if="previewImage" class="space-y-1.5">
+                <img :src="previewImage" class="w-20 h-28 object-cover mx-auto rounded-lg shadow-xs border border-slate-200" />
+                <div class="text-[11px] text-emerald-700 font-semibold">Tap to change slip image</div>
+              </div>
+              <div v-else class="space-y-1.5 py-2">
+                <ImageIcon class="w-7 h-7 text-slate-400 mx-auto" />
+                <div class="text-xs text-slate-700 font-semibold">Tap to upload transfer slip</div>
+                <div class="text-[10px] text-slate-400">Automated OCR and bank transaction verification</div>
+              </div>
+            </div>
+            <input type="file" accept="image/*" class="hidden" @change="onFileSelected" />
+          </label>
 
-      <!-- Quick 1-Click Verification for Customer Flow -->
-      <button
-        v-else
-        @click="triggerVerification('MOCK_VALID')"
-        :disabled="bookingStore.isSubmitting"
-        class="w-full mt-2.5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
-      >
-        <span v-if="bookingStore.isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        <FileCheck2 v-else class="w-3.5 h-3.5" />
-        <span>Simulate Valid Slip (Instant Confirmation)</span>
-      </button>
-    </div>
-
-    <!-- Clean Collapsible Evaluation / Testing Drawer (For Recruiters & Testers) -->
-    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden transition shadow-2xs">
-      <button
-        @click="showTesterPanel = !showTesterPanel"
-        class="w-full px-3 py-2 text-left flex items-center justify-between text-slate-600 hover:text-slate-900 transition cursor-pointer"
-      >
-        <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-600">
-          <Beaker class="w-3.5 h-3.5 text-emerald-600" />
-          <span>Slip Verification Sandbox (Exception Testing)</span>
-        </div>
-        <ChevronUp v-if="showTesterPanel" class="w-3.5 h-3.5 text-slate-400" />
-        <ChevronDown v-else class="w-3.5 h-3.5 text-slate-400" />
-      </button>
-
-      <div v-if="showTesterPanel" class="p-3 border-t border-slate-200/60 bg-white space-y-2">
-        <p class="text-[10px] text-slate-500">
-          Simulate bank verification scenarios to test system reactions:
-        </p>
-        <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+          <!-- Submit File Button -->
           <button
+            v-if="selectedFile"
             @click="triggerVerification('MOCK_VALID')"
             :disabled="bookingStore.isSubmitting"
-            class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-medium transition text-left cursor-pointer"
+            class="w-full mt-3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <div class="flex items-center space-x-1 font-bold">
-              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Valid Slip</span>
-            </div>
-            <div class="text-[9px] text-emerald-600 mt-0.5">Verified -> Booking Confirmed</div>
+            <span v-if="bookingStore.isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <span>Submit Slip for Verification</span>
           </button>
 
+          <!-- Quick 1-Click Verification for Customer Flow -->
           <button
-            @click="triggerVerification('MOCK_DUPLICATE')"
+            v-else
+            @click="triggerVerification('MOCK_VALID')"
             :disabled="bookingStore.isSubmitting"
-            class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl font-medium transition text-left cursor-pointer"
+            class="w-full mt-3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <div class="flex items-center space-x-1 font-bold">
-              <XCircle class="w-3.5 h-3.5 text-rose-600 shrink-0" />
-              <span>Duplicate Slip</span>
-            </div>
-            <div class="text-[9px] text-rose-600 mt-0.5">Reused slip -> Rejected</div>
-          </button>
-
-          <button
-            @click="triggerVerification('MOCK_UNDERPAID')"
-            :disabled="bookingStore.isSubmitting"
-            class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl font-medium transition text-left cursor-pointer"
-          >
-            <div class="flex items-center space-x-1 font-bold">
-              <AlertTriangle class="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span>Underpaid Slip</span>
-            </div>
-            <div class="text-[9px] text-amber-600 mt-0.5">Amount mismatch -> Rejected</div>
-          </button>
-
-          <button
-            @click="triggerVerification('MOCK_API_DOWN')"
-            :disabled="bookingStore.isSubmitting"
-            class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-xl font-medium transition text-left cursor-pointer"
-          >
-            <div class="flex items-center space-x-1 font-bold">
-              <FileCheck2 class="w-3.5 h-3.5 text-purple-600 shrink-0" />
-              <span>Bank Timeout</span>
-            </div>
-            <div class="text-[9px] text-purple-600 mt-0.5">Gateway down -> Manual Review</div>
+            <span v-if="bookingStore.isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <FileCheck2 v-else class="w-3.5 h-3.5" />
+            <span>Simulate Valid Slip (Instant Confirmation)</span>
           </button>
         </div>
 
-        <!-- Verification Result Toast in Drawer -->
-        <div v-if="bookingStore.slipResult" class="mt-2 p-2 rounded-xl text-[10px] bg-slate-50 border border-slate-200">
-          <div class="flex items-center space-x-1.5 font-bold mb-0.5">
-            <CheckCircle2 v-if="bookingStore.slipResult.success" class="w-3.5 h-3.5 text-emerald-600" />
-            <XCircle v-else class="w-3.5 h-3.5 text-rose-600" />
-            <span :class="bookingStore.slipResult.success ? 'text-emerald-700' : 'text-rose-700'">
-              {{ bookingStore.slipResult.verification_status }}
-            </span>
+        <!-- Clean Collapsible Evaluation / Testing Drawer (For Recruiters & Testers) -->
+        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden transition shadow-2xs">
+          <button
+            @click="showTesterPanel = !showTesterPanel"
+            class="w-full px-3.5 py-2.5 text-left flex items-center justify-between text-slate-700 hover:text-slate-900 transition cursor-pointer"
+          >
+            <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-700">
+              <Beaker class="w-3.5 h-3.5 text-emerald-600" />
+              <span>Slip Verification Sandbox (Exception Testing)</span>
+            </div>
+            <ChevronUp v-if="showTesterPanel" class="w-3.5 h-3.5 text-slate-400" />
+            <ChevronDown v-else class="w-3.5 h-3.5 text-slate-400" />
+          </button>
+
+          <div v-if="showTesterPanel" class="p-3 border-t border-slate-200/60 bg-white space-y-2">
+            <p class="text-[10px] text-slate-500">
+              Simulate bank verification scenarios to test system reactions:
+            </p>
+            <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+              <button
+                @click="triggerVerification('MOCK_VALID')"
+                :disabled="bookingStore.isSubmitting"
+                class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-medium transition text-left cursor-pointer"
+              >
+                <div class="flex items-center space-x-1 font-bold">
+                  <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Valid Slip</span>
+                </div>
+                <div class="text-[9px] text-emerald-600 mt-0.5">Verified -> Booking Confirmed</div>
+              </button>
+
+              <button
+                @click="triggerVerification('MOCK_DUPLICATE')"
+                :disabled="bookingStore.isSubmitting"
+                class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl font-medium transition text-left cursor-pointer"
+              >
+                <div class="flex items-center space-x-1 font-bold">
+                  <XCircle class="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span>Duplicate Slip</span>
+                </div>
+                <div class="text-[9px] text-rose-600 mt-0.5">Reused slip -> Rejected</div>
+              </button>
+
+              <button
+                @click="triggerVerification('MOCK_UNDERPAID')"
+                :disabled="bookingStore.isSubmitting"
+                class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl font-medium transition text-left cursor-pointer"
+              >
+                <div class="flex items-center space-x-1 font-bold">
+                  <AlertTriangle class="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>Underpaid Slip</span>
+                </div>
+                <div class="text-[9px] text-amber-600 mt-0.5">Amount mismatch -> Rejected</div>
+              </button>
+
+              <button
+                @click="triggerVerification('MOCK_API_DOWN')"
+                :disabled="bookingStore.isSubmitting"
+                class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-xl font-medium transition text-left cursor-pointer"
+              >
+                <div class="flex items-center space-x-1 font-bold">
+                  <FileCheck2 class="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span>Bank Timeout</span>
+                </div>
+                <div class="text-[9px] text-purple-600 mt-0.5">Gateway down -> Manual Review</div>
+              </button>
+            </div>
+
+            <!-- Verification Result Toast in Drawer -->
+            <div v-if="bookingStore.slipResult" class="mt-2 p-2 rounded-xl text-[10px] bg-slate-50 border border-slate-200">
+              <div class="flex items-center space-x-1.5 font-bold mb-0.5">
+                <CheckCircle2 v-if="bookingStore.slipResult.success" class="w-3.5 h-3.5 text-emerald-600" />
+                <XCircle v-else class="w-3.5 h-3.5 text-rose-600" />
+                <span :class="bookingStore.slipResult.success ? 'text-emerald-700' : 'text-rose-700'">
+                  {{ bookingStore.slipResult.verification_status }}
+                </span>
+              </div>
+              <p class="text-slate-600">{{ bookingStore.slipResult.message }}</p>
+            </div>
           </div>
-          <p class="text-slate-600">{{ bookingStore.slipResult.message }}</p>
         </div>
       </div>
     </div>
