@@ -90,7 +90,7 @@ async function onProceedToPayment() {
 
         <button
           @click="showOrderReview = true"
-          class="flex items-center space-x-1.5 bg-slate-900 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
+          class="lg:hidden flex items-center space-x-1.5 bg-slate-900 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
         >
           <ShoppingBag class="w-3 h-3 text-emerald-400" />
           <span>Cart</span>
@@ -352,10 +352,10 @@ async function onProceedToPayment() {
       </div>
     </div>
 
-    <!-- 4. Interactive Order Review Bottom Sheet Drawer (Comprehensive Overview) -->
+    <!-- 4. Interactive Order Review Bottom Sheet Drawer (Comprehensive Overview - Mobile Only) -->
     <div
       v-if="showOrderReview"
-      class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex flex-col justify-end transition-opacity"
+      class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex flex-col justify-end transition-opacity lg:hidden"
       @click.self="showOrderReview = false"
     >
       <div class="bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl border-t border-slate-200 max-w-md mx-auto w-full animate-in slide-in-from-bottom duration-200">
