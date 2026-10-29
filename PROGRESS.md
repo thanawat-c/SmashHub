@@ -143,6 +143,12 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **Local EMVCo PromptPay QR Code Generation (`PaymentStep.vue`, `promptpay.go`)**: Replaced unreliable third-party HTTP QR image endpoint with high-definition, offline client-side QR renderer using `qrcode` library; implemented official Thai EMVCo QR payload generator with CRC-16/CCITT-FALSE checksum matching Thai banking standards (K PLUS, SCB EASY, Krungthai NEXT).
     - **Court Number Display Fix (`PaymentStep.vue`, `booking_service.go`)**: Preloaded `Courts.Court` and `Items.Product` upon booking creation and added robust fallback hierarchy (`court.court?.court_number || court.court_number || court.courtNumber || court.court_id || 1`) preventing blank court labels in payment order summaries.
     - **Save/Download QR Action (`PaymentStep.vue`)**: Added 1-click "Save QR Image" button allowing mobile/desktop users to save the payment QR image directly to their device for photo scanning.
+- [x] **Phase 19: Step 3 Payment Workstation Responsive Overhaul & QR Distortion Fix** (Completed)
+  - **Task 19 (`07c9765`)**:
+    - **QR Code Distortion & Flexbox Squashing Root Cause Fix (`PaymentStep.vue`)**: Replaced flex-compressed container with block scrolling layout and enforced `aspect-square w-48 h-48 sm:w-52 sm:h-52 shrink-0 block` on QR image element, preventing CSS flex-shrink from flattening the QR code into a rectangle.
+    - **2-Column Side-by-Side Payment Workstation (`PaymentStep.vue`)**: On desktop (`lg:`), arranged payment into two balanced columns (Left: Thai QR Payment card with Amount, QR, Download button, PromptPay number, Copy; Right: Upload slip dropzone + Sandbox testing panel).
+    - **Bottom Clipping & Overflow Elimination (`PaymentStep.vue`)**: Hid redundant Order Summary card on desktop (`lg:hidden`) and provided generous bottom scrolling padding (`pb-28`), allowing the Recruiter Exception Testing Sandbox to be 100% visible and accessible without any clipping.
+    - **Missing Lucide Icon Fix (`LiffHeader.vue`)**: Imported `ClipboardList` from `lucide-vue-next` to prevent Vue template render warnings.
 
 
 
