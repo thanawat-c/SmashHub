@@ -149,7 +149,9 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **2-Column Side-by-Side Payment Workstation (`PaymentStep.vue`)**: On desktop (`lg:`), arranged payment into two balanced columns (Left: Thai QR Payment card with Amount, QR, Download button, PromptPay number, Copy; Right: Upload slip dropzone + Sandbox testing panel).
     - **Bottom Clipping & Overflow Elimination (`PaymentStep.vue`)**: Hid redundant Order Summary card on desktop (`lg:hidden`) and provided generous bottom scrolling padding (`pb-28`), allowing the Recruiter Exception Testing Sandbox to be 100% visible and accessible without any clipping.
     - **Missing Lucide Icon Fix (`LiffHeader.vue`)**: Imported `ClipboardList` from `lucide-vue-next` to prevent Vue template render warnings.
-
-
-
-
+- [x] **Phase 20: Role-Based Navigation & Customer Portal UI Isolation** (Completed)
+  - **Task 20 (`9435322`)**:
+    - **Customer Role Navigation Protection (`App.vue`)**: When logged in as a customer account (`authStore.isAuthenticated && !authStore.isAdmin`), strictly hid internal backoffice tabs (`[Admin POS]` and `[Split View]`) and replaced the segmented switcher with clean, customer-facing portal links (`Book Court` and `My Bookings`).
+    - **Context-Aware Branding Subtitle (`App.vue`)**: Dynamically display `Badminton Arena` for customer members and `Arena Management & POS` only for store managers/admins (`authStore.isAdmin`).
+    - **User Dropdown Cleanup & Click-Outside Backdrop (`App.vue`)**: Added full-screen backdrop overlay (`fixed inset-0 z-40 bg-transparent cursor-default`) to close the profile menu when clicking outside; eliminated developer jargon (`(Customer LIFF)` -> `Book Court`) and restricted `Backoffice (Admin POS)` strictly to admin roles.
+    - **Security Route Guard (`router/index.js`)**: Added client-side navigation guard blocking non-admin users from accessing `/admin` backoffice, automatically redirecting them to `/liff`.
