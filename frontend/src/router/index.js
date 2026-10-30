@@ -37,6 +37,20 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title
   }
+  // Prevent non-admin users from accessing /admin backoffice
+  if (to.path === '/admin') {
+    const savedUser = localStorage.getItem('smashhub_user')
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser)
+        if (user && user.role !== 'ADMIN') {
+          return next('/liff')
+        }
+      } catch (e) {
+        // ignore parse error
+      }
+    }
+  }
   next()
 })
 

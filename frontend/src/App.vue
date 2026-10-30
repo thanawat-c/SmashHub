@@ -6,7 +6,7 @@ import { useBookingStore } from '@/stores/bookingStore'
 import AuthModal from '@/components/AuthModal.vue'
 import MyBookingsDrawer from '@/components/MyBookingsDrawer.vue'
 import {
-  LogIn, LogOut, User, ShieldCheck, ChevronDown, Check, ClipboardList
+  LogIn, LogOut, User, ShieldCheck, ChevronDown, Check, ClipboardList, Calendar
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -48,57 +48,136 @@ function handleLogout() {
         </div>
         <div>
           <span class="text-sm font-black text-slate-900 tracking-tight">SmashHub</span>
-          <span class="text-slate-400 text-[11px] ml-1.5 hidden lg:inline">Arena Management & POS</span>
+          <span class="text-slate-400 text-[11px] ml-1.5 hidden lg:inline">
+            {{ authStore.isAdmin ? 'Arena Management & POS' : 'Badminton Arena' }}
+          </span>
         </div>
       </div>
 
       <nav class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Main Navigation Segment -->
-        <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 border border-slate-200/60">
+        <!-- 1. For Admin users: Switcher between Customer View and Admin POS, plus Split View -->
+        <template v-if="authStore.isAdmin">
+          <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 border border-slate-200/60">
+            <button
+              @click="router.push('/liff')"
+              :class="[
+                'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
+                route.path === '/liff'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              ]"
+            >
+              <span>Customer View</span>
+            </button>
+
+            <button
+              @click="router.push('/admin')"
+              :class="[
+                'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
+                route.path === '/admin'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              ]"
+            >
+              <ShieldCheck class="w-3.5 h-3.5 text-emerald-600" />
+              <span>Admin POS</span>
+            </button>
+          </div>
+
+          <button
+            @click="openCustomerBookings"
+            class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5"
+            title="View booking history"
+          >
+            <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
+            <span class="hidden md:inline">My Bookings</span>
+          </button>
+
+          <button
+            @click="router.push('/demo')"
+            :class="[
+              'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-900 hover:bg-slate-100 hidden sm:inline-flex items-center space-x-1',
+              route.path === '/demo' ? 'bg-slate-200 text-slate-900 font-bold' : ''
+            ]"
+            title="Dual split screen preview"
+          >
+            <span>Split View</span>
+          </button>
+        </template>
+
+        <!-- 2. For Customer (Logged in Member): Clean customer links, NO admin/split buttons -->
+        <template v-else-if="authStore.isAuthenticated">
           <button
             @click="router.push('/liff')"
             :class="[
-              'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 select-none',
               route.path === '/liff'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             ]"
           >
-            <span>Customer LIFF</span>
+            <Calendar class="w-3.5 h-3.5 text-emerald-600" />
+            <span>Book Court</span>
           </button>
 
           <button
-            @click="navigateToAdmin"
-            :class="[
-              'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
-              route.path === '/admin'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-800'
-            ]"
+            @click="openCustomerBookings"
+            class="px-3 py-1.5 rounded-xl text-xs font-bold transition text-slate-700 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5 select-none"
+            title="View my booking history"
           >
-            <span>Admin POS</span>
+            <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
+            <span>My Bookings</span>
           </button>
-        </div>
+        </template>
 
-        <button
-          @click="openCustomerBookings"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5"
-          title="View my booking history"
-        >
-          <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
-          <span class="hidden md:inline">My Bookings</span>
-        </button>
+        <!-- 3. For Guest / Portfolio Reviewer (Not Logged In): Show navigation to test all views -->
+        <template v-else>
+          <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 border border-slate-200/60">
+            <button
+              @click="router.push('/liff')"
+              :class="[
+                'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
+                route.path === '/liff'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              ]"
+            >
+              <span>Customer Booking</span>
+            </button>
 
-        <button
-          @click="router.push('/demo')"
-          :class="[
-            'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-900 hover:bg-slate-100 hidden sm:inline-flex items-center space-x-1',
-            route.path === '/demo' ? 'bg-slate-200 text-slate-900 font-bold' : ''
-          ]"
-          title="Dual split screen preview"
-        >
-          <span>Split View</span>
-        </button>
+            <button
+              @click="navigateToAdmin"
+              :class="[
+                'px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 text-xs select-none',
+                route.path === '/admin'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              ]"
+            >
+              <span>Admin POS</span>
+            </button>
+          </div>
+
+          <button
+            @click="openCustomerBookings"
+            class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1.5"
+            title="View my booking history"
+          >
+            <ClipboardList class="w-3.5 h-3.5 text-emerald-600" />
+            <span class="hidden md:inline">My Bookings</span>
+          </button>
+
+          <button
+            @click="router.push('/demo')"
+            :class="[
+              'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-500 hover:text-slate-900 hover:bg-slate-100 hidden sm:inline-flex items-center space-x-1',
+              route.path === '/demo' ? 'bg-slate-200 text-slate-900 font-bold' : ''
+            ]"
+            title="Dual split screen preview"
+          >
+            <span>Split View</span>
+          </button>
+        </template>
 
         <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
 
@@ -137,6 +216,13 @@ function handleLogout() {
             <ChevronDown class="w-3 h-3 text-slate-400" />
           </button>
 
+          <!-- Backdrop to close dropdown when clicking outside -->
+          <div
+            v-if="showUserMenu"
+            class="fixed inset-0 z-40 bg-transparent cursor-default"
+            @click="showUserMenu = false"
+          ></div>
+
           <!-- User Menu Dropdown -->
           <div
             v-if="showUserMenu"
@@ -167,11 +253,12 @@ function handleLogout() {
               </button>
 
               <button
+                v-if="route.path !== '/liff'"
                 @click="showUserMenu = false; router.push('/liff')"
                 class="w-full px-3.5 py-2 text-left text-slate-700 hover:bg-slate-50 transition flex items-center space-x-2"
               >
-                <User class="w-3.5 h-3.5 text-slate-400" />
-                <span>Book Court (Customer LIFF)</span>
+                <Calendar class="w-3.5 h-3.5 text-slate-400" />
+                <span>Book Court</span>
               </button>
 
               <button
