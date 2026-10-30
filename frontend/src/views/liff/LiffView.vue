@@ -6,7 +6,7 @@ import MiniStoreStep from './components/MiniStoreStep.vue'
 import PaymentStep from './components/PaymentStep.vue'
 import ETicketStep from './components/ETicketStep.vue'
 import DesktopOrderSummary from './components/DesktopOrderSummary.vue'
-import { Check } from 'lucide-vue-next'
+import { Check, ChevronLeft } from 'lucide-vue-next'
 
 const bookingStore = useBookingStore()
 
@@ -22,21 +22,46 @@ function goToStep(stepNum) {
     bookingStore.currentStep = stepNum
   }
 }
+
+function handleBack() {
+  if (bookingStore.currentStep > 1) {
+    if (bookingStore.currentStep === 4) {
+      bookingStore.resetSelection()
+      bookingStore.currentStep = 1
+      bookingStore.fetchAvailability()
+    } else {
+      bookingStore.currentStep--
+    }
+  } else {
+    bookingStore.resetSelection()
+    bookingStore.fetchAvailability()
+  }
+}
 </script>
 
 <template>
-  <div class="min-h-[calc(100vh-56px)] bg-slate-100/90 flex items-center justify-center p-0 lg:p-6 select-none">
+  <div class="min-h-screen lg:min-h-[calc(100vh-56px)] bg-slate-100/90 flex items-center justify-center p-0 lg:p-6 select-none">
     <!-- Responsive Adaptive Container:
          - Mobile (<1024px): 100% full viewport height matching LINE LIFF in-app browser.
          - Desktop (>=1024px): Expands to high-end max-w-6xl / 7xl 2-Column sports booking layout.
     -->
-    <div class="w-full sm:max-w-[480px] lg:max-w-6xl xl:max-w-7xl h-[calc(100vh-56px)] lg:h-[860px] lg:max-h-[92vh] bg-white sm:border-x lg:border border-slate-200/90 sm:shadow-lg lg:rounded-3xl flex flex-col justify-between overflow-hidden relative transition-all">
-      <!-- Top LIFF Navigation & Profile Bar -->
-      <LiffHeader />
+    <div class="w-full sm:max-w-[480px] lg:max-w-6xl xl:max-w-7xl h-screen lg:h-[860px] lg:max-h-[92vh] bg-white sm:border-x lg:border border-slate-200/90 sm:shadow-lg lg:rounded-3xl flex flex-col justify-between overflow-hidden relative transition-all">
+      <!-- Top LIFF Navigation & Profile Bar (Mobile Only: hidden on desktop to avoid duplicate header) -->
+      <LiffHeader class="lg:hidden" />
 
       <!-- Minimalist Clean Step Progress Indicator -->
-      <div class="bg-white px-4 py-2.5 border-b border-slate-100 flex-shrink-0">
+      <div class="bg-white px-4 py-2.5 lg:py-3 border-b border-slate-100 flex-shrink-0">
         <div class="flex items-center justify-between max-w-2xl mx-auto">
+          <!-- Desktop Back Button -->
+          <button
+            v-if="bookingStore.currentStep > 1"
+            @click="handleBack"
+            class="hidden lg:flex items-center space-x-1 text-slate-500 hover:text-slate-800 transition mr-3 text-xs font-semibold py-1 px-2 rounded-lg hover:bg-slate-100 cursor-pointer -ml-2"
+            title="Go to previous step"
+          >
+            <ChevronLeft class="w-4 h-4" />
+            <span>Back</span>
+          </button>
           <div
             v-for="(step, idx) in steps"
             :key="step.num"

@@ -43,7 +43,7 @@ function handleBack() {
 </script>
 
 <template>
-  <div class="bg-white text-slate-900 select-none relative z-30 border-b border-slate-100">
+  <div class="bg-white text-slate-900 select-none relative z-30 border-b border-slate-100 lg:hidden">
     <!-- Clean Authentic LIFF Bar Header -->
     <div class="px-4 py-3 flex items-center justify-between bg-white">
       <div class="flex items-center space-x-2">

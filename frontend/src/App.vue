@@ -41,7 +41,12 @@ function handleLogout() {
 <template>
   <div class="min-h-screen flex flex-col bg-slate-100">
     <!-- Clean White Navigation Bar -->
-    <header class="bg-white text-slate-800 border-b border-slate-200/80 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-50 shadow-2xs">
+    <header
+      :class="[
+        'bg-white text-slate-800 border-b border-slate-200/80 px-4 py-2 items-center justify-between text-xs sticky top-0 z-50 shadow-2xs',
+        route.path === '/liff' ? 'hidden lg:flex' : 'flex'
+      ]"
+    >
       <div class="flex items-center space-x-2.5">
         <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs shadow-xs font-bold tracking-tighter">
           SH
