@@ -155,3 +155,8 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
     - **Context-Aware Branding Subtitle (`App.vue`)**: Dynamically display `Badminton Arena` for customer members and `Arena Management & POS` only for store managers/admins (`authStore.isAdmin`).
     - **User Dropdown Cleanup & Click-Outside Backdrop (`App.vue`)**: Added full-screen backdrop overlay (`fixed inset-0 z-40 bg-transparent cursor-default`) to close the profile menu when clicking outside; eliminated developer jargon (`(Customer LIFF)` -> `Book Court`) and restricted `Backoffice (Admin POS)` strictly to admin roles.
     - **Security Route Guard (`router/index.js`)**: Added client-side navigation guard blocking non-admin users from accessing `/admin` backoffice, automatically redirecting them to `/liff`.
+- [x] **Phase 21: Stacked Duplicate Header Elimination** (Completed)
+  - **Task 21 (`03c34c7`)**:
+    - **Desktop Header Deduplication (`LiffView.vue`, `LiffHeader.vue`)**: Added `lg:hidden` to the inner `LiffHeader` component so that on desktop screens (`lg:`), the redundant inner header bar (`SmashHub Arena • LINE LIFF Official` and duplicate profile pill) is completely removed.
+    - **Mobile LINE LIFF Isolation (`App.vue`)**: Added `route.path === '/liff' ? 'hidden lg:flex' : 'flex'` to the outer `App.vue` header, ensuring mobile smartphones only show the authentic LINE in-app browser header without an extra desktop navbar taking up screen space.
+    - **Desktop Workflow Back Button (`LiffView.vue`)**: Integrated a clean desktop `Back` button with `ChevronLeft` icon into the step progress bar when `currentStep > 1`, ensuring seamless step navigation on desktop without needing the mobile header.
