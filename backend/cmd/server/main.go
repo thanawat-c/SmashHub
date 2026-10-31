@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	log.Println("🏸 Starting SmashHub Backend Server...")
+	log.Println("[SmashHub] Starting backend server...")
 
 	// 1. Initialize PostgreSQL Connection
 	db, err := models.InitDB("")
@@ -119,7 +119,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("🚀 SmashHub API running on port %s (http://localhost:%s)", port, port)
+		log.Printf("[SmashHub] API server listening on :%s (http://localhost:%s)", port, port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server listen failed: %v", err)
 		}
