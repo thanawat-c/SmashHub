@@ -164,3 +164,8 @@ SmashHub is a Badminton Court Booking System via LINE LIFF, integrated with a mi
   - **Task 22 (`5c38ab4`)**:
     - **PromptPay EMVCo Unit Testing (`promptpay_test.go`)**: Implemented comprehensive table-driven tests verifying CRC-16/CCITT-FALSE checksum calculation against standard test vectors (`0x29B1`), Tag 29 sanitization (handling hyphens, spaces, country code padding), dynamic vs fixed amounts, and payload format validity.
     - **GitHub Actions CI/CD Pipeline (`.github/workflows/ci.yml`)**: Configured automated multi-job pipeline testing Go 1.22 backend binaries & unit tests (`go test -v ./...`), alongside Vue 3 + Vite frontend production compilation (`npm run build`) on every push to `main` and pull requests.
+- [x] **Phase 23: Production Log & Template Comment Cleanup** (Completed)
+  - **Task 23.1 (`10d73fa`)**:
+    - **Backend Startup Log Normalization (`main.go`)**: Standardized server startup logs (`[SmashHub] Starting backend server...`, `[SmashHub] API server listening on :%s`), removing informal emojis to ensure clean, production-grade output.
+  - **Task 23.2 (`96721e1`)**:
+    - **Frontend Debug Log & Comment Pruning (`adminStore.js`, `LiffView.vue`, `.gitignore`)**: Removed test `console.log` from the live SSE connection listener, pruned verbose comments from the customer storefront template, and updated `.gitignore` with compiled server binary paths.
