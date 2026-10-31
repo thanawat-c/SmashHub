@@ -133,7 +133,6 @@ export const useAdminStore = defineStore('admin', () => {
 
     eventSource.addEventListener('CONNECTED', (e) => {
       isSSEConnected.value = true
-      console.log('[SSE] Connected to SmashHub live events')
     })
 
     eventSource.addEventListener('BOOKING_CREATED', (e) => {
